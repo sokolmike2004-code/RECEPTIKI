@@ -59,15 +59,23 @@
     margin: 24px auto;
     padding: 0 20px;
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 16px;
     align-items: center;
+  }
+  
+  .search-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 800px;
+    flex-wrap: wrap;
     justify-content: center;
   }
+
   .search-box {
     flex: 1;
     min-width: 240px;
-    max-width: 400px;
     position: relative;
   }
   .search-box input {
@@ -92,6 +100,11 @@
     transform: translateY(-50%);
     font-size: 16px;
   }
+  
+  .search-box.fridge-search::before {
+    content: "🥦";
+  }
+
   .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
   .filter-btn {
     padding: 10px 18px;
@@ -366,6 +379,7 @@
     .modal-body { padding: 18px 20px 24px; }
     .modal-header { padding: 18px 20px 4px; }
     .modal-hero { height: 180px; }
+    .search-row { flex-direction: column; }
   }
 </style>
 </head>
@@ -377,8 +391,13 @@
 </header>
 
 <div class="toolbar">
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Поиск по названию или ингредиентам...">
+  <div class="search-row">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Поиск по названию...">
+    </div>
+    <div class="search-box fridge-search">
+      <input type="text" id="ingredientInput" placeholder="Что в холодильнике? (например: курица, сыр)">
+    </div>
   </div>
   <div class="filters" id="filters"></div>
 </div>
@@ -417,189 +436,192 @@
 
 <script>
 /* =====================================================
-   ФОТО: пути соответствуют вашим файлам в папке img/
+   БАЗА РЕЦЕПТОВ (всего 30)
    ===================================================== */
 
 const recipes = [
+  // --- СТАРЫЕ 20 РЕЦЕПТОВ ---
   {
-    id: 1, title: "Паста Карбонара",
-    img: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=800&q=80&auto=format&fit=crop",
-    desc: "Классическая итальянская паста с беконом и яйцом",
-    category: "Основное", time: "25 мин", servings: "2", difficulty: "Средне",
-    calories: 380, weight: "450 г",
+    id: 1, title: "Паста Карбонара", img: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=800&q=80&auto=format&fit=crop",
+    desc: "Классическая итальянская паста с беконом и яйцом", category: "Основное", time: "25 мин", servings: "2", difficulty: "Средне", calories: 380, weight: "450 г",
     ingredients: ["Спагетти — 200 г","Бекон — 150 г","Яйца — 2 шт","Пармезан — 50 г","Чеснок — 1 зубчик","Соль, перец"],
     steps: ["Отварите спагетти в подсоленной воде до готовности.","Обжарьте бекон на сковороде до хруста.","Взбейте яйца с тёртым пармезаном.","Смешайте горячую пасту с беконом, снимите с огня.","Добавьте яичную смесь, быстро перемешайте.","Подавайте, посыпав пармезаном и перцем."]
   },
   {
-    id: 2, title: "Греческий салат",
-    img: "img/greek.jpg",
-    desc: "Свежий салат с фетой, огурцом и маслинами",
-    category: "Салаты", time: "15 мин", servings: "3", difficulty: "Легко",
-    calories: 120, weight: "600 г",
+    id: 2, title: "Греческий салат", img: "img/greek.jpg",
+    desc: "Свежий салат с фетой, огурцом и маслинами", category: "Салаты", time: "15 мин", servings: "3", difficulty: "Легко", calories: 120, weight: "600 г",
     ingredients: ["Помидоры — 3 шт","Огурцы — 2 шт","Фета — 150 г","Маслины — 100 г","Красный лук — 1/2","Оливковое масло","Орегано"],
     steps: ["Нарежьте помидоры крупными кусками.","Нарежьте огурцы полукружьями.","Лук нарежьте тонкими полукольцами.","Смешайте овощи, добавьте маслины.","Сверху выложите кубики феты.","Заправьте маслом, посыпьте орегано."]
   },
   {
-    id: 3, title: "Борщ",
-    img: "img/borsh.jpg",
-    desc: "Насыщенный украинский суп со свёклой и мясом",
-    category: "Супы", time: "1.5 ч", servings: "6", difficulty: "Средне",
-    calories: 85, weight: "2.5 кг",
+    id: 3, title: "Борщ", img: "img/borsh.jpg",
+    desc: "Насыщенный украинский суп со свёклой и мясом", category: "Супы", time: "1.5 ч", servings: "6", difficulty: "Средне", calories: 85, weight: "2.5 кг",
     ingredients: ["Говядина — 500 г","Свёкла — 2 шт","Капуста — 300 г","Картофель — 3 шт","Морковь — 1","Лук — 1","Томатная паста — 2 ст.л.","Сметана, чеснок"],
     steps: ["Сварите бульон из мяса (около 1 часа).","Добавьте нарезанный картофель.","Обжарьте лук, морковь и свёклу с томатной пастой.","Добавьте зажарку в бульон.","Положите нашинкованную капусту, варите 10 мин.","Дайте настояться, подавайте со сметаной."]
   },
   {
-    id: 4, title: "Блины",
-    img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80&auto=format&fit=crop",
-    desc: "Тонкие блины на молоке — к завтраку и не только",
-    category: "Завтрак", time: "30 мин", servings: "4", difficulty: "Легко",
-    calories: 230, weight: "700 г",
+    id: 4, title: "Блины", img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80&auto=format&fit=crop",
+    desc: "Тонкие блины на молоке — к завтраку и не только", category: "Завтрак", time: "30 мин", servings: "4", difficulty: "Легко", calories: 230, weight: "700 г",
     ingredients: ["Мука — 200 г","Молоко — 500 мл","Яйца — 2 шт","Сахар — 2 ст.л.","Соль — щепотка","Растительное масло — 2 ст.л."],
     steps: ["Взбейте яйца с сахаром и солью.","Добавьте молоко, перемешайте.","Просейте муку, размешайте до однородности.","Добавьте масло, дайте тесту постоять 10 мин.","Жарьте на разогретой сковороде с двух сторон.","Подавайте с маслом, вареньем или сметаной."]
   },
   {
-    id: 5, title: "Шарлотка",
-    img: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?w=800&q=80&auto=format&fit=crop",
-    desc: "Простой яблочный пирог из доступных продуктов",
-    category: "Десерт", time: "50 мин", servings: "6", difficulty: "Легко",
-    calories: 260, weight: "1.2 кг",
+    id: 5, title: "Шарлотка", img: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?w=800&q=80&auto=format&fit=crop",
+    desc: "Простой яблочный пирог из доступных продуктов", category: "Десерт", time: "50 мин", servings: "6", difficulty: "Легко", calories: 260, weight: "1.2 кг",
     ingredients: ["Яйца — 4 шт","Сахар — 200 г","Мука — 200 г","Яблоки — 4 шт","Разрыхлитель — 1 ч.л.","Корица — по вкусу"],
     steps: ["Взбейте яйца с сахаром до пышной массы.","Просейте муку с разрыхлителем, аккуратно смешайте.","Нарежьте яблоки ломтиками.","Выложите яблоки в форму, посыпьте корицей.","Залейте тестом, разровняйте.","Выпекайте 35 мин при 180°C. Проверьте зубочисткой."]
   },
   {
-    id: 6, title: "Куриные котлеты",
-    img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80&auto=format&fit=crop",
-    desc: "Сочные домашние котлеты из куриного фарша",
-    category: "Основное", time: "40 мин", servings: "4", difficulty: "Легко",
-    calories: 220, weight: "700 г",
+    id: 6, title: "Куриные котлеты", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80&auto=format&fit=crop",
+    desc: "Сочные домашние котлеты из куриного фарша", category: "Основное", time: "40 мин", servings: "4", difficulty: "Легко", calories: 220, weight: "700 г",
     ingredients: ["Куриный фарш — 500 г","Лук — 1 шт","Яйцо — 1 шт","Хлеб — 2 ломтика","Молоко — 100 мл","Соль, перец","Панировочные сухари"],
     steps: ["Замочите хлеб в молоке.","Измельчите лук.","Смешайте фарш, лук, яйцо и отжатый хлеб.","Посолите, поперчите, перемешайте.","Сформируйте котлеты, обваляйте в сухарях.","Обжарьте с двух сторон до золотистой корочки."]
   },
   {
-    id: 7, title: "Овсяная каша",
-    img: "img/ovsyanka.jpg",
-    desc: "Полезный завтрак с ягодами и мёдом",
-    category: "Завтрак", time: "10 мин", servings: "1", difficulty: "Легко",
-    calories: 150, weight: "300 г",
+    id: 7, title: "Овсяная каша", img: "img/ovsyanka.jpg",
+    desc: "Полезный завтрак с ягодами и мёдом", category: "Завтрак", time: "10 мин", servings: "1", difficulty: "Легко", calories: 150, weight: "300 г",
     ingredients: ["Овсяные хлопья — 60 г","Молоко — 250 мл","Мёд — 1 ст.л.","Ягоды — по вкусу","Щепотка соли"],
     steps: ["Залейте хлопья молоком.","Доведите до кипения на медленном огне.","Варите 5–7 минут, помешивая.","Добавьте соль, снимите с огня.","Подавайте с мёдом и ягодами."]
   },
   {
-    id: 8, title: "Пицца Маргарита",
-    img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80&auto=format&fit=crop",
-    desc: "Домашняя пицца с томатами и моцареллой",
-    category: "Основное", time: "1 ч 20 мин", servings: "2", difficulty: "Средне",
-    calories: 270, weight: "600 г",
+    id: 8, title: "Пицца Маргарита", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80&auto=format&fit=crop",
+    desc: "Домашняя пицца с томатами и моцареллой", category: "Основное", time: "1 ч 20 мин", servings: "2", difficulty: "Средне", calories: 270, weight: "600 г",
     ingredients: ["Мука — 300 г","Вода — 180 мл","Дрожжи — 5 г","Сахар — 1 ч.л.","Моцарелла — 200 г","Томатный соус — 150 г","Базилик"],
     steps: ["Растворите дрожжи с сахаром в тёплой воде.","Замесите тесто с мукой, оставьте на 1 час.","Раскатайте тесто в круг.","Смажьте томатным соусом.","Выложите кусочки моцареллы.","Выпекайте 12–15 мин при 250°C. Посыпьте базиликом."]
   },
   {
-    id: 9, title: "Сырный суп",
-    img: "img/soup.jpg",
-    desc: "Нежный крем-суп с плавленым сыром",
-    category: "Супы", time: "35 мин", servings: "4", difficulty: "Легко",
-    calories: 130, weight: "1.5 кг",
+    id: 9, title: "Сырный суп", img: "https://images.pexels.com/photos/37593663/pexels-photo-37593663.jpeg?w=800&q=80&auto=format&fit=crop",
+    desc: "Нежный крем-суп с плавленым сыром", category: "Супы", time: "35 мин", servings: "4", difficulty: "Легко", calories: 130, weight: "1.5 кг",
     ingredients: ["Куриный бульон — 1 л","Плавленый сыр — 200 г","Картофель — 2 шт","Морковь — 1","Лук — 1","Зелень","Соль, перец"],
     steps: ["Сварите бульон.","Добавьте нарезанный картофель, варите 15 мин.","Обжарьте лук и морковь.","Добавьте зажарку в суп.","Растворите плавленый сыр в супе.","Проварите 5 мин, добавьте зелень."]
   },
   {
-    id: 10, title: "Цезарь с курицей",
-    img: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800&q=80&auto=format&fit=crop",
-    desc: "Классический салат с курицей, сухариками и пармезаном",
-    category: "Салаты", time: "30 мин", servings: "2", difficulty: "Средне",
-    calories: 180, weight: "400 г",
+    id: 10, title: "Цезарь с курицей", img: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800&q=80&auto=format&fit=crop",
+    desc: "Классический салат с курицей, сухариками и пармезаном", category: "Салаты", time: "30 мин", servings: "2", difficulty: "Средне", calories: 180, weight: "400 г",
     ingredients: ["Куриное филе — 300 г","Романо — 1 пучок","Пармезан — 50 г","Белый хлеб — 3 ломтика","Соус цезарь","Чеснок","Оливковое масло"],
     steps: ["Обжарьте куриное филе до готовности.","Нарежьте хлеб кубиками и подсушите.","Порвите салат руками.","Нарежьте курицу полосками.","Смешайте салат, курицу и сухарики.","Заправьте соусом, посыпьте пармезаном."]
   },
   {
-    id: 11, title: "Грибной крем-суп",
-    img: "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?w=800&q=80&auto=format&fit=crop",
-    desc: "Бархатистый суп из шампиньонов со сливками",
-    category: "Супы", time: "40 мин", servings: "4", difficulty: "Средне",
-    calories: 140, weight: "1.4 кг",
+    id: 11, title: "Грибной крем-суп", img: "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?w=800&q=80&auto=format&fit=crop",
+    desc: "Бархатистый суп из шампиньонов со сливками", category: "Супы", time: "40 мин", servings: "4", difficulty: "Средне", calories: 140, weight: "1.4 кг",
     ingredients: ["Шампиньоны — 400 г","Лук — 1 шт","Сливки — 200 мл","Картофель — 2 шт","Масло — 30 г","Соль, перец","Зелень"],
     steps: ["Обжарьте лук на масле до прозрачности.","Добавьте нарезанные грибы, жарьте 10 мин.","Добавьте картофель и воду, варите 15 мин.","Пробейте суп блендером до однородности.","Влейте сливки, прогрейте.","Подавайте с зеленью и сухариками."]
   },
   {
-    id: 12, title: "Тирамису",
-    img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80&auto=format&fit=crop",
-    desc: "Итальянский десерт с маскарпоне и кофе",
-    category: "Десерт", time: "30 мин + охлаждение", servings: "6", difficulty: "Средне",
-    calories: 320, weight: "900 г",
+    id: 12, title: "Тирамису", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80&auto=format&fit=crop",
+    desc: "Итальянский десерт с маскарпоне и кофе", category: "Десерт", time: "30 мин + охлаждение", servings: "6", difficulty: "Средне", calories: 320, weight: "900 г",
     ingredients: ["Маскарпоне — 500 г","Савоярди — 200 г","Яйца — 4 шт","Сахар — 100 г","Кофе — 200 мл","Какао — 2 ст.л."],
     steps: ["Сварите крепкий кофе, остудите.","Взбейте яйца с сахаром.","Добавьте маскарпоне, перемешайте.","Обмакните савоярди в кофе, выложите слоем.","Чередуйте слои печенья и крема.","Посыпьте какао, охладите 4 часа."]
   },
   {
-    id: 13, title: "Сырники",
-    img: "img/syrniki.jpg",
-    desc: "Нежные творожные сырники на завтрак",
-    category: "Завтрак", time: "25 мин", servings: "3", difficulty: "Легко",
-    calories: 210, weight: "500 г",
+    id: 13, title: "Сырники", img: "img/syrniki.jpg",
+    desc: "Нежные творожные сырники на завтрак", category: "Завтрак", time: "25 мин", servings: "3", difficulty: "Легко", calories: 210, weight: "500 г",
     ingredients: ["Творог — 400 г","Яйцо — 1 шт","Мука — 3 ст.л.","Сахар — 2 ст.л.","Ванилин — щепотка","Растительное масло"],
     steps: ["Разомните творог вилкой.","Добавьте яйцо, сахар и ванилин.","Всыпьте муку, замесите массу.","Сформируйте сырники, обваляйте в муке.","Обжарьте на среднем огне с двух сторон.","Подавайте со сметаной или вареньем."]
   },
   {
-    id: 14, title: "Оливье",
-    img: "https://images.pexels.com/photos/35572936/pexels-photo-35572936.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Классический праздничный салат",
-    category: "Салаты", time: "40 мин", servings: "6", difficulty: "Легко",
-    calories: 190, weight: "1.3 кг",
+    id: 14, title: "Оливье", img: "https://images.pexels.com/photos/35572936/pexels-photo-35572936.jpeg?w=800&q=80&auto=format&fit=crop",
+    desc: "Классический праздничный салат", category: "Салаты", time: "40 мин", servings: "6", difficulty: "Легко", calories: 190, weight: "1.3 кг",
     ingredients: ["Картофель — 4 шт","Морковь — 2 шт","Яйца — 4 шт","Колбаса — 300 г","Огурцы солёные — 3 шт","Горошек — 1 банка","Майонез"],
     steps: ["Отварите картофель, морковь и яйца.","Остудите и нарежьте кубиками.","Нарежьте колбасу и огурцы.","Добавьте горошек.","Заправьте майонезом.","Посолите и перемешайте."]
   },
   {
-    id: 15, title: "Плов",
-    img: "https://images.pexels.com/photos/14286683/pexels-photo-14286683.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Узбекский плов с бараниной и морковью",
-    category: "Основное", time: "1.5 ч", servings: "6", difficulty: "Сложно",
-    calories: 300, weight: "2 кг",
+    id: 15, title: "Плов", img: "https://images.pexels.com/photos/14286683/pexels-photo-14286683.jpeg?w=800&q=80&auto=format&fit=crop",
+    desc: "Узбекский плов с бараниной и морковью", category: "Основное", time: "1.5 ч", servings: "6", difficulty: "Сложно", calories: 300, weight: "2 кг",
     ingredients: ["Рис — 500 г","Баранина — 600 г","Морковь — 4 шт","Лук — 2 шт","Чеснок — 1 головка","Растительное масло","Зира, барбарис, соль"],
     steps: ["Обжарьте мясо до корочки в казане.","Добавьте лук, жарьте до золотистого.","Добавьте морковь соломкой.","Влейте воду, тушите 20 мин.","Выложите рис, добавьте специи и чеснок.","Варите под крышкой 20 мин, дайте постоять."]
   },
   {
-    id: 16, title: "Стейк из говядины",
-    img: "https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=800&q=80&auto=format&fit=crop",
-    desc: "Сочный стейк рибай с розмарином",
-    category: "Основное", time: "20 мин", servings: "1", difficulty: "Средне",
-    calories: 350, weight: "300 г",
+    id: 16, title: "Стейк из говядины", img: "https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=800&q=80&auto=format&fit=crop",
+    desc: "Сочный стейк рибай с розмарином", category: "Основное", time: "20 мин", servings: "1", difficulty: "Средне", calories: 350, weight: "300 г",
     ingredients: ["Стейк рибай — 300 г","Сливочное масло — 30 г","Чеснок — 2 зубчика","Розмарин","Соль, перец","Оливковое масло"],
     steps: ["Достаньте стейк за 30 мин до готовки.","Посолите и поперчите с двух сторон.","Разогрейте сковороду до максимума.","Обжарьте по 2–3 мин с каждой стороны.","Добавьте масло, чеснок, розмарин, полейте стейк.","Дайте отдохнуть 5 мин перед подачей."]
   },
   {
-    id: 17, title: "Брускетта",
-    img: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800&q=80&auto=format&fit=crop",
-    desc: "Итальянская закуска с томатами на тостах",
-    category: "Закуски", time: "15 мин", servings: "4", difficulty: "Легко",
-    calories: 160, weight: "350 г",
+    id: 17, title: "Брускетта", img: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800&q=80&auto=format&fit=crop",
+    desc: "Итальянская закуска с томатами на тостах", category: "Закуски", time: "15 мин", servings: "4", difficulty: "Легко", calories: 160, weight: "350 г",
     ingredients: ["Багет — 1 шт","Помидоры — 4 шт","Чеснок — 2 зубчика","Базилик","Оливковое масло","Соль, перец"],
     steps: ["Нарежьте багет ломтиками.","Подсушите в духовке или на гриле.","Натрите тосты чесноком.","Нарежьте помидоры кубиками.","Смешайте с базиликом, маслом, солью.","Выложите томаты на тосты."]
   },
   {
-    id: 18, title: "Ризотто с грибами",
-    img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800&q=80&auto=format&fit=crop",
-    desc: "Кремовое итальянское ризотто с шампиньонами",
-    category: "Основное", time: "35 мин", servings: "3", difficulty: "Средне",
-    calories: 250, weight: "900 г",
+    id: 18, title: "Ризотто с грибами", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800&q=80&auto=format&fit=crop",
+    desc: "Кремовое итальянское ризотто с шампиньонами", category: "Основное", time: "35 мин", servings: "3", difficulty: "Средне", calories: 250, weight: "900 г",
     ingredients: ["Рис арборио — 300 г","Шампиньоны — 300 г","Лук — 1 шт","Бульон — 1 л","Пармезан — 50 г","Белое вино — 100 мл","Масло"],
     steps: ["Обжарьте лук и грибы на масле.","Добавьте рис, обжарьте 1 мин.","Влейте вино, дайте испариться.","Постепенно добавляйте горячий бульон, помешивая.","Готовьте 18–20 мин до кремовой текстуры.","Добавьте пармезан и масло, перемешайте."]
   },
   {
-    id: 19, title: "Шоколадный брауни",
-    img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80&auto=format&fit=crop",
-    desc: "Влажный шоколадный брауни с орехами",
-    category: "Десерт", time: "45 мин", servings: "8", difficulty: "Легко",
-    calories: 400, weight: "800 г",
+    id: 19, title: "Шоколадный брауни", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80&auto=format&fit=crop",
+    desc: "Влажный шоколадный брауни с орехами", category: "Десерт", time: "45 мин", servings: "8", difficulty: "Легко", calories: 400, weight: "800 г",
     ingredients: ["Тёмный шоколад — 200 г","Масло — 150 г","Яйца — 3 шт","Сахар — 200 г","Мука — 100 г","Грецкие орехи — 100 г","Какао — 2 ст.л."],
     steps: ["Растопите шоколад с маслом.","Взбейте яйца с сахаром.","Смешайте шоколадную массу с яйцами.","Добавьте муку и какао.","Вмешайте орехи, вылейте в форму.","Выпекайте 25 мин при 180°C."]
   },
   {
-    id: 20, title: "Лимонад домашний",
-    img: "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800&q=80&auto=format&fit=crop",
-    desc: "Освежающий лимонад с мятой и лимоном",
-    category: "Напитки", time: "10 мин", servings: "4", difficulty: "Легко",
-    calories: 45, weight: "1.2 л",
+    id: 20, title: "Лимонад домашний", img: "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800&q=80&auto=format&fit=crop",
+    desc: "Освежающий лимонад с мятой и лимоном", category: "Напитки", time: "10 мин", servings: "4", difficulty: "Легко", calories: 45, weight: "1.2 л",
     ingredients: ["Лимоны — 3 шт","Сахар — 100 г","Вода — 1 л","Мята — пучок","Лёд — по вкусу"],
     steps: ["Вскипятите воду с сахаром, остудите.","Выжмите сок из лимонов.","Смешайте сок с сиропом.","Добавьте мяту и лёд.","Дайте настояться 10 мин.","Подавайте охлаждённым."]
+  },
+
+  // --- НОВЫЕ 10 РЕЦЕПТОВ ---
+  {
+    id: 21, title: "Окрошка", img: "https://images.unsplash.com/photo-1628185134146-53b8a5403eaf?w=800&q=80&auto=format&fit=crop",
+    desc: "Освежающий летний холодный суп на квасе", category: "Супы", time: "30 мин", servings: "4", difficulty: "Легко", calories: 60, weight: "1.5 кг",
+    ingredients: ["Квас — 1 л","Картофель — 3 шт","Яйца — 3 шт","Колбаса — 200 г","Огурцы — 2 шт","Редис — 5 шт","Зелень","Сметана"],
+    steps: ["Отварите картофель и яйца, остудите.","Нарежьте картофель, яйца, колбасу и овощи мелкими кубиками.","Смешайте все ингредиенты в кастрюле.","Добавьте мелко нарезанную зелень и соль.","Залейте квасом и добавьте ложку сметаны перед подачей."]
+  },
+  {
+    id: 22, title: "Бефстроганов", img: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=800&q=80&auto=format&fit=crop",
+    desc: "Нежная говядина в сливочно-грибном соусе", category: "Основное", time: "40 мин", servings: "4", difficulty: "Средне", calories: 220, weight: "800 г",
+    ingredients: ["Говядина — 500 г","Шампиньоны — 200 г","Лук — 1 шт","Сливки — 200 мл","Мука — 1 ст.л.","Соль, перец","Масло"],
+    steps: ["Нарежьте мясо тонкими брусочками, обжарьте на масле до румяной корочки.","Добавьте лук и грибы, жарьте 10 минут.","Посыпьте мукой, перемешайте.","Влейте сливки, посолите и поперчите.","Тушите 10-15 минут на медленном огне до загустения."]
+  },
+  {
+    id: 23, title: "Капрезе", img: "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=800&q=80&auto=format&fit=crop",
+    desc: "Итальянская закуска из томатов, моцареллы и базилика", category: "Закуски", time: "10 мин", servings: "2", difficulty: "Легко", calories: 180, weight: "300 г",
+    ingredients: ["Помидоры — 3 шт","Моцарелла — 200 г","Базилик — пучок","Оливковое масло","Бальзамический соус","Соль, перец"],
+    steps: ["Нарежьте помидоры и моцареллу кружочками одинаковой толщины.","Выложите на тарелку, чередуя томат и сыр.","Добавьте листья базилика.","Полейте оливковым маслом и бальзамическим соусом.","Посолите и поперчите по вкусу."]
+  },
+  {
+    id: 24, title: "Картофельное пюре", img: "https://images.unsplash.com/photo-1600628421066-f6bda6a7b976?w=800&q=80&auto=format&fit=crop",
+    desc: "Идеальный гарнир — нежное и сливочное пюре", category: "Основное", time: "30 мин", servings: "4", difficulty: "Легко", calories: 130, weight: "600 г",
+    ingredients: ["Картофель — 700 г","Молоко — 150 мл","Сливочное масло — 50 г","Соль, перец","Зелень"],
+    steps: ["Очистите картофель и отварите до мягкости в подсоленной воде.","Слейте воду, добавьте сливочное масло.","Разомните картофель толкушкой.","Влейте горячее молоко, продолжая помешивать.","Взбейте до однородности, добавьте зелень."]
+  },
+  {
+    id: 25, title: "Куриный бульон", img: "https://images.unsplash.com/photo-1604733516160-9c1287d47d18?w=800&q=80&auto=format&fit=crop",
+    desc: "Прозрачный, наваристый бульон для восстановления сил", category: "Супы", time: "1.5 ч", servings: "4", difficulty: "Легко", calories: 50, weight: "2 л",
+    ingredients: ["Куриная тушка — 1 шт","Морковь — 1 шт","Лук — 1 шт","Лавровый лист","Перец горошком","Соль","Вода — 2.5 л"],
+    steps: ["Промойте курицу, залейте холодной водой и доведите до кипения.","Снимите пену, убавьте огонь.","Добавьте целую морковь, луковицу и специи.","Варите на медленном огне 1-1.5 часа.","Процедите бульон, мясо можно использовать отдельно."]
+  },
+  {
+    id: 26, title: "Гречка с грибами", img: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?w=800&q=80&auto=format&fit=crop",
+    desc: "Сытное и полезное блюдо на каждый день", category: "Основное", time: "30 мин", servings: "3", difficulty: "Легко", calories: 160, weight: "700 г",
+    ingredients: ["Гречка — 200 г","Шампиньоны — 300 г","Лук — 1 шт","Масло — 30 г","Соль, перец","Вода — 400 мл"],
+    steps: ["Промойте гречку, залейте водой и варите до готовности.","Нарежьте лук и грибы.","Обжарьте лук на масле до золотистого цвета, добавьте грибы.","Жарьте грибы до испарения жидкости.","Смешайте готовую гречку с грибами, посолите и поперчите."]
+  },
+  {
+    id: 27, title: "Чесночные гренки", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=800&q=80&auto=format&fit=crop",
+    desc: "Хрустящая закуска к супу или пиву", category: "Закуски", time: "15 мин", servings: "2", difficulty: "Легко", calories: 350, weight: "200 г",
+    ingredients: ["Белый хлеб — 4 ломтика","Чеснок — 3 зубчика","Оливковое масло — 3 ст.л.","Соль","Зелень"],
+    steps: ["Нарежьте хлеб брусочками.","Смешайте масло с выдавленным чесноком и солью.","Обмакните каждый кусочек хлеба в масло.","Выложите на противень и запекайте при 180°C 10 минут до хруста.","Посыпьте зеленью."]
+  },
+  {
+    id: 28, title: "Молочный коктейль", img: "https://images.unsplash.com/photo-1572490122747-3968b75bb8fc?w=800&q=80&auto=format&fit=crop",
+    desc: "Классический сладкий напиток с мороженым", category: "Напитки", time: "5 мин", servings: "2", difficulty: "Легко", calories: 90, weight: "500 мл",
+    ingredients: ["Молоко — 300 мл","Мороженое — 150 г","Банан — 1 шт","Сироп — по вкусу"],
+    steps: ["Нарежьте банан кусочками.","Поместите в блендер молоко, мороженое и банан.","Взбивайте на высокой скорости 1-2 минуты.","Разлейте по стаканам и подавайте сразу."]
+  },
+  {
+    id: 29, title: "Панкейки", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80&auto=format&fit=crop",
+    desc: "Пышные американские оладьи на кефире", category: "Завтрак", time: "20 мин", servings: "3", difficulty: "Легко", calories: 220, weight: "400 г",
+    ingredients: ["Мука — 200 г","Кефир — 200 мл","Яйцо — 1 шт","Сахар — 1 ст.л.","Сода — 0.5 ч.л.","Масло для жарки"],
+    steps: ["Смешайте кефир с содой, оставьте на 5 минут.","Взбейте яйцо с сахаром, добавьте кефир.","Всыпьте муку, замесите густое тесто.","Жарьте на разогретой сковороде с небольшим количеством масла.","Жарьте с двух сторон до золотистого цвета."]
+  },
+  {
+    id: 30, title: "Ленивая овсянка", img: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=800&q=80&auto=format&fit=crop",
+    desc: "Завтрак, который готовится вечером (овсянка в банке)", category: "Завтрак", time: "5 мин + ночь", servings: "1", difficulty: "Легко", calories: 180, weight: "250 г",
+    ingredients: ["Овсяные хлопья — 40 г","Молоко или йогурт — 100 мл","Семена чиа — 1 ч.л.","Фрукты/ягоды","Мёд"],
+    steps: ["Смешайте хлопья, семена чиа и молоко в банке.","Добавьте ложку мёда и перемешайте.","Закройте крышкой и уберите в холодильник на ночь.","Утром добавьте свежие фрукты или ягоды."]
   }
 ];
 
@@ -607,19 +629,13 @@ const recipes = [
 const FAV_KEY = "recipe_favorites";
 let favorites = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
 
-function saveFavorites() {
-  localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
-}
+function saveFavorites() { localStorage.setItem(FAV_KEY, JSON.stringify(favorites)); }
 function isFav(id) { return favorites.includes(id); }
 function toggleFav(id) {
-  if (isFav(id)) {
-    favorites = favorites.filter(x => x !== id);
-  } else {
-    favorites.push(id);
-  }
+  if (isFav(id)) favorites = favorites.filter(x => x !== id);
+  else favorites.push(id);
   saveFavorites();
   renderGrid();
-  
   const mBtn = document.getElementById("mFavBtn");
   if (mBtn.dataset.id == id) {
     mBtn.textContent = isFav(id) ? "❤️" : "🤍";
@@ -627,13 +643,15 @@ function toggleFav(id) {
   }
 }
 
-/* ---------- ФИЛЬТРЫ ---------- */
+/* ---------- ФИЛЬТРЫ И ПОИСК ---------- */
 let currentFilter = "Все";
 let searchQuery = "";
+let ingredientQuery = "";
 
 const grid = document.getElementById("grid");
 const filtersEl = document.getElementById("filters");
 const searchInput = document.getElementById("searchInput");
+const ingredientInput = document.getElementById("ingredientInput");
 
 const categories = ["Все", ...new Set(recipes.map(r => r.category))];
 
@@ -653,26 +671,47 @@ function renderFilters() {
   });
 }
 
-/* ---------- СЕТКА ---------- */
+/* ---------- СЕТКА И УМНЫЙ ПОИСК ПО ИНГРЕДИЕНТАМ ---------- */
 function renderGrid() {
-  const filtered = recipes.filter(r => {
-    let matchCat;
-    if (currentFilter === "Все") matchCat = true;
-    else if (currentFilter === "Избранное") matchCat = isFav(r.id);
-    else matchCat = r.category === currentFilter;
+  let filtered = recipes.filter(r => {
+    // 1. Фильтр по категориям
+    let matchCat = currentFilter === "Все" ? true :
+                   currentFilter === "Избранное" ? isFav(r.id) :
+                   r.category === currentFilter;
+    if (!matchCat) return false;
 
+    // 2. Поиск по названию/описанию
     const q = searchQuery.toLowerCase().trim();
-    const matchSearch = !q ||
-      r.title.toLowerCase().includes(q) ||
-      r.desc.toLowerCase().includes(q) ||
-      r.ingredients.some(i => i.toLowerCase().includes(q));
-    return matchCat && matchSearch;
+    if (q && !r.title.toLowerCase().includes(q) && !r.desc.toLowerCase().includes(q)) return false;
+
+    return true;
   });
 
+  // 3. Умный поиск по продуктам из холодильника
+  if (ingredientQuery.trim() !== "") {
+    const searchTerms = ingredientQuery.toLowerCase().split(/[, ]+/).filter(t => t.length > 1);
+    
+    if (searchTerms.length > 0) {
+      filtered = filtered.map(r => {
+        let matchCount = 0;
+        const recipeIngs = r.ingredients.join(" ").toLowerCase();
+        
+        searchTerms.forEach(term => {
+          if (recipeIngs.includes(term)) matchCount++;
+        });
+        
+        return { ...r, matchCount: matchCount };
+      })
+      .filter(r => r.matchCount > 0) // Оставляем только те, где есть совпадения
+      .sort((a, b) => b.matchCount - a.matchCount); // Сортируем: больше совпадений — выше
+    }
+  }
+
+  // Отрисовка результата
   if (filtered.length === 0) {
-    const msg = currentFilter === "Избранное"
-      ? "В избранном пока пусто. Нажми на 🤍 на карточке, чтобы добавить."
-      : "Ничего не найдено. Попробуйте другой запрос.";
+    const msg = currentFilter === "Избранное" ? "В избранном пока пусто. Нажми на 🤍 на карточке, чтобы добавить." :
+                ingredientQuery ? "По вашим продуктам ничего не нашлось. Попробуйте ввести другие ингредиенты." :
+                "Ничего не найдено. Попробуйте другой запрос.";
     grid.innerHTML = `<div class="empty"><span class="emoji">🍽️</span>${msg}</div>`;
     return;
   }
@@ -690,7 +729,7 @@ function renderGrid() {
       <div class="card-body">
         <div class="badge-row">
           <span class="badge">${r.category}</span>
-          <span class="calories-badge">🔥 ${r.calories} ккал/100г</span>
+          <span class="calories-badge">🔥 ${r.calories} ккал</span>
           <span class="weight-badge">⚖️ ${r.weight}</span>
         </div>
         <div class="card-title">${r.title}</div>
@@ -713,7 +752,6 @@ function openModal(id) {
   if (!r) return;
   currentModalId = id;
   document.getElementById("mImg").src = r.img;
-  document.getElementById("mImg").alt = r.title;
   document.getElementById("mTitle").textContent = r.title;
   document.getElementById("mDesc").textContent = r.desc;
   document.getElementById("mCat").textContent = r.category;
@@ -734,10 +772,7 @@ function openModal(id) {
   document.body.style.overflow = "hidden";
 }
 
-function toggleFavFromModal() {
-  if (currentModalId != null) toggleFav(currentModalId);
-}
-
+function toggleFavFromModal() { if (currentModalId != null) toggleFav(currentModalId); }
 function closeModal() {
   document.getElementById("modal").classList.remove("open");
   document.body.style.overflow = "";
@@ -750,8 +785,15 @@ document.getElementById("modal").addEventListener("click", e => {
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeModal();
 });
+
+// Обработчики ввода для двух полей
 searchInput.addEventListener("input", e => {
   searchQuery = e.target.value;
+  renderGrid();
+});
+
+ingredientInput.addEventListener("input", e => {
+  ingredientQuery = e.target.value;
   renderGrid();
 });
 
