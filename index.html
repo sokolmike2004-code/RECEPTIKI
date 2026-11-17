@@ -54,6 +54,26 @@
   header h1 { font-size: 42px; margin-bottom: 8px; position: relative; z-index: 1; }
   header p  { font-size: 17px; opacity: 0.95; position: relative; z-index: 1; }
 
+  /* Кнопка админа в шапке */
+  .admin-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.5);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s;
+  }
+  .admin-btn:hover { background: rgba(255,255,255,0.3); }
+  .admin-btn.active { background: #c0392b; border-color: #c0392b; }
+
   .toolbar {
     max-width: 1200px;
     margin: 24px auto;
@@ -101,9 +121,7 @@
     font-size: 16px;
   }
   
-  .search-box.fridge-search::before {
-    content: "🥦";
-  }
+  .search-box.fridge-search::before { content: "🥦"; }
 
   .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
   .filter-btn {
@@ -327,6 +345,27 @@
   .modal-header p  { color: var(--muted); font-size: 15px; }
 
   .modal-body { padding: 18px 30px 30px; }
+  
+  .upload-row {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .upload-btn, .reset-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .upload-btn { background: var(--primary); color: white; }
+  .upload-btn:hover { opacity: 0.9; }
+  .reset-btn { background: #eee; color: #555; }
+  .reset-btn:hover { background: #ddd; }
+
   .meta-row {
     display: flex;
     gap: 20px;
@@ -380,12 +419,16 @@
     .modal-header { padding: 18px 20px 4px; }
     .modal-hero { height: 180px; }
     .search-row { flex-direction: column; }
+    .admin-btn { top: 10px; right: 10px; padding: 6px 10px; font-size: 12px; }
   }
 </style>
 </head>
 <body>
 
 <header>
+  <!-- Кнопка Админа -->
+  <button id="adminBtn" class="admin-btn" onclick="toggleAdminMode()">🔒 Войти как админ</button>
+  
   <h1>🍳 Книга Рецептов</h1>
   <p>Простые и вкусные рецепты на каждый день</p>
 </header>
@@ -418,6 +461,13 @@
       <p id="mDesc"></p>
     </div>
     <div class="modal-body">
+      <!-- Блок загрузки фото (скрыт для обычных пользователей) -->
+      <div class="upload-row" id="uploadRow" style="display: none;">
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📷 Загрузить свое фото</button>
+        <button class="reset-btn" id="resetImgBtn" onclick="resetImage()" style="display:none;">🔄 Сбросить фото</button>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+      </div>
+
       <div class="meta-row">
         <div class="meta-item"><span class="label">Категория</span><span class="value" id="mCat"></span></div>
         <div class="meta-item"><span class="label">Время</span><span class="value" id="mTime"></span></div>
@@ -625,7 +675,120 @@ const recipes = [
   }
 ];
 
-/* ---------- ИЗБРАННОЕ (localStorage) ---------- */
+/* ---------- РЕЖИМ АДМИНИСТРАТОРА ---------- */
+const ADMIN_PASSWORD = "mikerecept6752";
+let isAdmin = sessionStorage.getItem("recipe_isAdmin") === "true";
+
+function toggleAdminMode() {
+  if (isAdmin) {
+    // Выход из режима админа
+    isAdmin = false;
+    sessionStorage.setItem("recipe_isAdmin", "false");
+    updateAdminUI();
+    closeModal(); // Закрываем модалку на всякий случай
+  } else {
+    // Вход
+    const pass = prompt("Введите пароль для доступа к редактированию фото:");
+    if (pass === ADMIN_PASSWORD) {
+      isAdmin = true;
+      sessionStorage.setItem("recipe_isAdmin", "true");
+      updateAdminUI();
+      alert("✅ Доступ разрешен! Теперь вы можете менять фото рецептов.");
+    } else if (pass !== null) {
+      alert("❌ Неверный пароль!");
+    }
+  }
+}
+
+function updateAdminUI() {
+  const btn = document.getElementById("adminBtn");
+  if (isAdmin) {
+    btn.textContent = "🔓 Выйти из админа";
+    btn.classList.add("active");
+  } else {
+    btn.textContent = "🔒 Войти как админ";
+    btn.classList.remove("active");
+  }
+  
+  // Обновляем видимость кнопок в модальном окне, если оно сейчас открыто
+  const uploadRow = document.getElementById("uploadRow");
+  if (uploadRow) {
+    uploadRow.style.display = isAdmin ? "flex" : "none";
+  }
+}
+
+/* ---------- ПОЛЬЗОВАТЕЛЬСКИЕ ФОТО (localStorage) ---------- */
+let customImages = JSON.parse(localStorage.getItem("recipe_custom_images") || "{}");
+
+function getImgSrc(id, defaultImg) {
+  return customImages[id] || defaultImg;
+}
+
+function handleImageUpload(event) {
+  if (!isAdmin) return alert("У вас нет прав на изменение фото!");
+  
+  const file = event.target.files[0];
+  if (!file || !currentModalId) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      // Умное сжатие, чтобы не переполнить память браузера
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 800;
+      let scale = 1;
+      
+      if (img.width > MAX_WIDTH) {
+        scale = MAX_WIDTH / img.width;
+      }
+      
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      
+      // Конвертируем в сжатый формат JPEG (качество 80%)
+      const base64 = canvas.toDataURL('image/jpeg', 0.8);
+      
+      // Сохраняем
+      customImages[currentModalId] = base64;
+      try {
+        localStorage.setItem("recipe_custom_images", JSON.stringify(customImages));
+      } catch(err) {
+        alert("Ошибка: Фото слишком большое, браузер не может его сохранить.");
+        return;
+      }
+
+      // Обновляем картинку в модальном окне
+      document.getElementById("mImg").src = base64;
+      document.getElementById("resetImgBtn").style.display = "inline-block";
+      
+      // Обновляем карточку в сетке
+      renderGrid();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetImage() {
+  if (!isAdmin) return alert("У вас нет прав на изменение фото!");
+  if (!currentModalId) return;
+  
+  delete customImages[currentModalId];
+  localStorage.setItem("recipe_custom_images", JSON.stringify(customImages));
+  
+  const r = recipes.find(x => x.id === currentModalId);
+  if (r) {
+    document.getElementById("mImg").src = r.img;
+    document.getElementById("resetImgBtn").style.display = "none";
+    renderGrid();
+  }
+}
+
+/* ---------- ИЗБРАННОЕ ---------- */
 const FAV_KEY = "recipe_favorites";
 let favorites = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
 
@@ -671,7 +834,7 @@ function renderFilters() {
   });
 }
 
-/* ---------- СЕТКА И УМНЫЙ ПОИСК ПО ИНГРЕДИЕНТАМ ---------- */
+/* ---------- СЕТКА И ПОИСК ---------- */
 function renderGrid() {
   let filtered = recipes.filter(r => {
     let matchCat = currentFilter === "Все" ? true :
@@ -712,10 +875,12 @@ function renderGrid() {
     return;
   }
 
-  grid.innerHTML = filtered.map(r => `
+  grid.innerHTML = filtered.map(r => {
+    const displayImg = getImgSrc(r.id, r.img);
+    return `
     <div class="card" onclick="openModal(${r.id})">
       <div class="card-image">
-        <img src="${r.img}" alt="${r.title}" loading="lazy"
+        <img src="${displayImg}" alt="${r.title}" loading="lazy"
              onerror="this.parentElement.innerHTML='<div style=&quot;display:flex;align-items:center;justify-content:center;height:100%;font-size:60px;&quot;>🍽️</div>'">
         <button class="fav-btn ${isFav(r.id) ? "active" : ""}"
                 onclick="event.stopPropagation();toggleFav(${r.id})">
@@ -737,7 +902,7 @@ function renderGrid() {
         </div>
       </div>
     </div>
-  `).join("");
+  `}).join("");
 }
 
 /* ---------- МОДАЛЬНОЕ ОКНО ---------- */
@@ -747,7 +912,10 @@ function openModal(id) {
   const r = recipes.find(x => x.id === id);
   if (!r) return;
   currentModalId = id;
-  document.getElementById("mImg").src = r.img;
+  
+  const displayImg = getImgSrc(r.id, r.img);
+  document.getElementById("mImg").src = displayImg;
+  
   document.getElementById("mTitle").textContent = r.title;
   document.getElementById("mDesc").textContent = r.desc;
   document.getElementById("mCat").textContent = r.category;
@@ -758,6 +926,15 @@ function openModal(id) {
   document.getElementById("mCal").textContent = r.calories + " ккал / 100 г";
   document.getElementById("mIngr").innerHTML = r.ingredients.map(i => `<li>${i}</li>`).join("");
   document.getElementById("mSteps").innerHTML = r.steps.map(s => `<li>${s}</li>`).join("");
+
+  // Показываем/скрываем блок загрузки в зависимости от прав
+  document.getElementById("uploadRow").style.display = isAdmin ? "flex" : "none";
+  
+  // Показываем кнопку сброса, если есть кастомное фото
+  document.getElementById("resetImgBtn").style.display = customImages[r.id] ? "inline-block" : "none";
+  
+  // Сбрасываем input
+  document.getElementById("fileInput").value = "";
 
   const mBtn = document.getElementById("mFavBtn");
   mBtn.dataset.id = id;
@@ -792,6 +969,8 @@ ingredientInput.addEventListener("input", e => {
   renderGrid();
 });
 
+// Инициализация при загрузке
+updateAdminUI();
 renderFilters();
 renderGrid();
 </script>
