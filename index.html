@@ -417,10 +417,8 @@
 
 <script>
 /* =====================================================
-   ФОТО: внешние ссылки (Pexels / Unsplash).
-   calories — ккал на 100 г готового блюда (примерно).
-   weight   — общий вес готового блюда.
-   Избранное хранится в localStorage браузера.
+   ФОТО: для 5 блюд используются локальные файлы из папки img/
+   Имена файлов взяты из вашего репозитория на GitHub.
    ===================================================== */
 
 const recipes = [
@@ -435,7 +433,7 @@ const recipes = [
   },
   {
     id: 2, title: "Греческий салат",
-    img: "https://images.pexels.com/photos/38268884/pexels-photo-38268884.jpeg?w=800&q=80&auto=format&fit=crop",
+    img: "img/pexels-924587518-19992957.jpg",
     desc: "Свежий салат с фетой, огурцом и маслинами",
     category: "Салаты", time: "15 мин", servings: "3", difficulty: "Легко",
     calories: 120, weight: "600 г",
@@ -444,7 +442,7 @@ const recipes = [
   },
   {
     id: 3, title: "Борщ",
-    img: "https://images.pexels.com/photos/10467829/pexels-photo-10467829.jpeg?w=800&q=80&auto=format&fit=crop",
+    img: "img/pexels-valeriya-36612300.jpg",
     desc: "Насыщенный украинский суп со свёклой и мясом",
     category: "Супы", time: "1.5 ч", servings: "6", difficulty: "Средне",
     calories: 85, weight: "2.5 кг",
@@ -480,7 +478,7 @@ const recipes = [
   },
   {
     id: 7, title: "Овсяная каша",
-    img: "https://images.pexels.com/photos/4725734/pexels-photo-4725734.jpeg?w=800&q=80&auto=format&fit=crop",
+    img: "img/pexels-owlet-9873798.jpg",
     desc: "Полезный завтрак с ягодами и мёдом",
     category: "Завтрак", time: "10 мин", servings: "1", difficulty: "Легко",
     calories: 150, weight: "300 г",
@@ -498,7 +496,7 @@ const recipes = [
   },
   {
     id: 9, title: "Сырный суп",
-    img: "https://images.pexels.com/photos/37593663/pexels-photo-37593663.jpeg?w=800&q=80&auto=format&fit=crop",
+    img: "img/pexels-polina-tankilevitch-4725744.jpg",
     desc: "Нежный крем-суп с плавленым сыром",
     category: "Супы", time: "35 мин", servings: "4", difficulty: "Легко",
     calories: 130, weight: "1.5 кг",
@@ -534,7 +532,7 @@ const recipes = [
   },
   {
     id: 13, title: "Сырники",
-    img: "https://images.pexels.com/photos/31085543/pexels-photo-31085543.jpeg?w=800&q=80&auto=format&fit=crop",
+    img: "img/pexels-sejio402-3429330.jpg",
     desc: "Нежные творожные сырники на завтрак",
     category: "Завтрак", time: "25 мин", servings: "3", difficulty: "Легко",
     calories: 210, weight: "500 г",
@@ -622,7 +620,7 @@ function toggleFav(id) {
   }
   saveFavorites();
   renderGrid();
-  // обновить кнопку в модальном окне, если оно открыто
+  
   const mBtn = document.getElementById("mFavBtn");
   if (mBtn.dataset.id == id) {
     mBtn.textContent = isFav(id) ? "❤️" : "🤍";
