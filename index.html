@@ -5,161 +5,621 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Книга Рецептов 🍳</title>
 <style>
-  /* ... (все стили оставь точно такими же, как в прошлом коде) ... */
+  :root {
+    --primary: #ff6b35;
+    --primary-hover: #e85a27;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --border: #dfe6e9;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Шапка */
+  header {
+    background: var(--card-bg);
+    padding: 16px 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  input[type="text"] {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    min-width: 220px;
+    outline: none;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--primary);
+  }
+
+  button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-hover);
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-outline:hover, .btn-outline.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  .btn-danger {
+    background: #d63031;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #b71c1c;
+  }
+
+  /* Фильтры */
+  .filters {
+    max-width: 1200px;
+    margin: 20px auto 0;
+    padding: 0 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Сетка рецептов */
+  .container {
+    max-width: 1200px;
+    margin: 20px auto 60px;
+    padding: 0 24px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  }
+
+  .card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: #eee;
+  }
+
+  .fav-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    padding: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  .card-body {
+    padding: 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-cat {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .card-meta {
+    margin-top: auto;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Модальное окно */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal.open {
+    display: flex;
+  }
+
+  .modal-content {
+    background: var(--card-bg);
+    border-radius: 16px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.9);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 10;
+  }
+
+  .modal-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+  }
+
+  .modal-body {
+    padding: 24px;
+  }
+
+  .admin-panel {
+    background: #fff3e0;
+    border: 1px dashed #ff9800;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: none;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .admin-panel.visible {
+    display: flex;
+  }
+
+  .modal-body h3 {
+    margin: 18px 0 10px;
+    font-size: 1.1rem;
+  }
+
+  .modal-body ul, .modal-body ol {
+    padding-left: 20px;
+  }
+
+  .modal-body li {
+    margin-bottom: 6px;
+  }
+
+  /* Экран загрузки */
+  #loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--primary);
+  }
 </style>
 <!-- Подключаем Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://jsdelivr.net"></script>
 </head>
 <body>
-<!-- ... (весь HTML-каркас оставь без изменений) ... -->
+
+<div id="loading-overlay">⏳ Загрузка в облако...</div>
+
+<header>
+  <div class="logo">🍳 Книга Рецептов</div>
+  <div class="controls">
+    <input type="text" id="search-input" placeholder="Поиск рецепта..." oninput="renderGrid()">
+    <button class="btn-outline" id="fav-filter-btn" onclick="toggleFavFilter()">❤️ Избранное</button>
+    <button class="btn-outline" id="admin-btn" onclick="toggleAdminMode()">🔒 Админ</button>
+  </div>
+</header>
+
+<div class="filters" id="filters-container"></div>
+
+<div class="container">
+  <div class="grid" id="recipes-grid"></div>
+</div>
+
+<!-- Модальное окно рецепта -->
+<div class="modal" id="recipe-modal" onclick="if(event.target === this) closeModal()">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img src="" alt="" class="modal-img" id="modal-img">
+    <div class="modal-body">
+      <div class="admin-panel" id="modal-admin-panel">
+        <strong>🛠 Управление фото (облако):</strong>
+        <input type="file" id="image-upload-input" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+        <button class="btn-primary" onclick="document.getElementById('image-upload-input').click()">📷 Загрузить новое фото</button>
+        <button class="btn-danger" onclick="resetImage()">🗑 Сбросить фото</button>
+      </div>
+
+      <div class="card-cat" id="modal-cat"></div>
+      <h2 id="modal-title" style="margin-bottom: 8px;"></h2>
+      <div id="modal-time" style="color: var(--text-muted); font-size: 0.9rem;"></div>
+
+      <h3>Ингредиенты:</h3>
+      <ul id="modal-ingredients"></ul>
+
+      <h3>Приготовление:</h3>
+      <ol id="modal-steps"></ol>
+    </div>
+  </div>
+</div>
 
 <script>
-const SUPABASE_URL = "https://ooweerxaqizvovadsecb.supabase.co/rest/v1/";
+/* ================= НАСТРОЙКИ SUPABASE ================= */
+const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_8SvPI97piMkxAmoZ8vUbIQ_U7YoGp4w";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 /* ===================================================== */
 
-// Все фото из облака будут храниться здесь
 let customImages = {};
 
-// Функция для загрузки всех ссылок на фото из базы данных Supabase
+// Загрузка ссылок на фото из базы данных Supabase
 async function loadImagesFromCloud() {
-  const { data, error } = await supabase
-    .from('custom_images')
-    .select('*');
+  try {
+    const { data, error } = await db
+      .from('custom_images')
+      .select('*');
 
-  if (error) {
-    console.error("Ошибка загрузки фото:", error);
-    return;
-  }
+    if (error) {
+      console.error("Ошибка загрузки фото из Supabase:", error);
+      return;
+    }
 
-  customImages = {};
-  if (data) {
-    data.forEach(item => {
-      customImages[item.recipe_id] = item.image_url;
-    });
+    customImages = {};
+    if (data) {
+      data.forEach(item => {
+        customImages[item.recipe_id] = item.image_url;
+      });
+    }
+    renderGrid();
+    if (currentModalId) {
+      const recipe = recipes.find(r => r.id === currentModalId);
+      if (recipe) {
+        document.getElementById("modal-img").src = customImages[recipe.id] || recipe.image;
+      }
+    }
+  } catch (err) {
+    console.error("Сетевая ошибка при обращении к Supabase:", err);
   }
-  renderGrid();
 }
 
-// Вызываем загрузку фото при старте
-loadImagesFromCloud();
-
-/* ---------- БАЗА РЕЦЕПТОВ (оставь свой массив recipes) ---------- */
+/* ---------- БАЗА РЕЦЕПТОВ ---------- */
 const recipes = [
-  // ... (твой массив recipes, я не буду его дублировать, он у тебя уже есть) ...
+  {
+    id: 1,
+    title: "Сырники с ванилью",
+    category: "Завтраки",
+    time: "20 мин",
+    image: "https://unsplash.com",
+    ingredients: ["Творог 9% — 400 г", "Яйцо — 1 шт.", "Мука — 3 ст. л.", "Сахар — 2 ст. л.", "Ванильный сахар — 1 ч. л."],
+    steps: ["Разомните творог вилкой с яйцом и сахаром.", "Добавьте муку и перемешайте до однородности.", "Сформируйте шайбочки и обжарьте на среднем огне по 3–4 минуты с каждой стороны."]
+  },
+  {
+    id: 2,
+    title: "Паста Карбонара",
+    category: "Основные блюда",
+    time: "25 мин",
+    image: "https://unsplash.com",
+    ingredients: ["Спагетти — 250 г", "Бекон или гуанчале — 150 г", "Яичные желтки — 3 шт.", "Пармезан — 70 г", "Черный перец — по вкусу"],
+    steps: ["Отварите спагетти до состояния аль денте.", "Обжарьте нарезанный бекон до хрустящей корочки.", "Смешайте желтки с тертым пармезаном и перцем.", "Соедините горячую пасту с беконом, снимите с огня и быстро вмешайте соус."]
+  },
+  {
+    id: 3,
+    title: "Салат Цезарь с курицей",
+    category: "Салаты",
+    time: "30 мин",
+    image: "https://unsplash.com",
+    ingredients: ["Куриное филе — 200 г", "Салат Романо — 1 кочан", "Помидоры черри — 150 г", "Сухарики — 50 г", "Пармезан и соус Цезарь"],
+Используйте код с осторожностью.
+steps: ["Обжарьте куриное филе со специями и нарежьте ломтиками.", "Порвите листья салата руками.", "Выложите ингредиенты на тарелку, полейте соусом и посыпьте сыром."]
+},
+{
+id: 4,
+title: "Шоколадный брауни",
+category: "Десерты",
+time: "40 мин",
+image: "unsplash.com",
+ingredients: ["Темный шоколад — 200 г", "Сливочное масло — 150 г", "Сахар — 150 г", "Яйца — 3 шт.", "Мука — 80 г"],
+steps: ["Растопите шоколад со сливочным маслом на водяной бане.", "Взбейте яйца с сахаром, влейте теплый шоколад.", "Добавьте муку, вылейте в форму и выпекайте 25 минут при 180 °C."]
+}
 ];
-
-/* ---------- РЕЖИМ АДМИНИСТРАТОРА (без изменений) ---------- */
-// ... (код toggleAdminMode, updateAdminUI, isAdmin, ADMIN_PASSWORD оставь как было) ...
-
-/* ---------- ЗАГРУЗКА В ОБЛАКО (Supabase) ---------- */
+/* ---------- СОСТОЯНИЕ ПРИЛОЖЕНИЯ ---------- */
+let favorites = JSON.parse(localStorage.getItem("recipe_favs") || "[]");
+let activeCategory = "Все";
+let onlyFavorites = false;
+let currentModalId = null;
+/* ---------- РЕЖИМ АДМИНИСТРАТОРА ---------- */
+const ADMIN_PASSWORD = "admin";
+let isAdmin = sessionStorage.getItem("is_admin") === "true";
+function toggleAdminMode() {
+if (isAdmin) {
+isAdmin = false;
+sessionStorage.removeItem("is_admin");
+updateAdminUI();
+return;
+}
+const pass = prompt("Введите пароль администратора:");
+if (pass === ADMIN_PASSWORD) {
+isAdmin = true;
+sessionStorage.setItem("is_admin", "true");
+updateAdminUI();
+} else if (pass !== null) {
+alert("Неверный пароль!");
+}
+}
+function updateAdminUI() {
+const adminBtn = document.getElementById("admin-btn");
+const modalPanel = document.getElementById("modal-admin-panel");
+if (isAdmin) {
+adminBtn.textContent = "🔓 Админ (Выйти)";
+adminBtn.classList.add("active");
+modalPanel.classList.add("visible");
+} else {
+adminBtn.textContent = "🔒 Админ";
+adminBtn.classList.remove("active");
+modalPanel.classList.remove("visible");
+}
+}
+/* ---------- ЗАГРУЗКА И СБРОС ФОТО В SUPABASE ---------- */
 async function handleImageUpload(event) {
-  if (!isAdmin) return alert("У вас нет прав!");
-  const file = event.target.files[0];
-  if (!file || !currentModalId) return;
-
-  document.getElementById("loading-overlay").style.display = "flex";
-
-  // 1. Сжимаем фото (как в прошлом коде)
-  const reader = new FileReader();
-  reader.onload = async function(e) {
-    const img = new Image();
-    img.onload = async function() {
-      const canvas = document.createElement('canvas');
-      const MAX_WIDTH = 800;
-      let scale = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1;
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      
-      const base64 = canvas.toDataURL('image/jpeg', 0.8);
-      
-      // Преобразуем base64 в blob для загрузки
-      const response = await fetch(base64);
-      const blob = await response.blob();
-
-      // 2. Загружаем файл в Supabase Storage
-      const fileName = `recipe_${currentModalId}_${Date.now()}.jpg`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('recipes')
-        .upload(fileName, blob);
-
-      if (uploadError) {
-        document.getElementById("loading-overlay").style.display = "none";
-        alert("Ошибка загрузки в хранилище: " + uploadError.message);
-        return;
-      }
-
-      // 3. Получаем публичную ссылку на фото
-      const { data: urlData } = supabase.storage
-        .from('recipes')
-        .getPublicUrl(fileName);
-
-      const publicUrl = urlData.publicUrl;
-
-      // 4. Сохраняем ссылку в базу данных (таблица custom_images)
-      const { error: dbError } = await supabase
-        .from('custom_images')
-        .upsert({ 
-          recipe_id: currentModalId, 
-          image_url: publicUrl 
-        }, { onConflict: 'recipe_id' }); // Если запись есть, обновляем её
-
-      document.getElementById("loading-overlay").style.display = "none";
-
-      if (dbError) {
-        alert("Ошибка сохранения в базу: " + dbError.message);
-        return;
-      }
-
-      alert("✅ Фото успешно обновлено в облаке!");
-      // Перезагружаем фото из облака
-      loadImagesFromCloud();
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+if (!isAdmin) return alert("У вас нет прав!");
+const file = event.target.files[0];
+if (!file || !currentModalId) return;
+document.getElementById("loading-overlay").style.display = "flex";
+const reader = new FileReader();
+reader.onload = function(e) {
+const img = new Image();
+img.onload = async function() {
+try {
+const canvas = document.createElement('canvas');
+const MAX_WIDTH = 800;
+let scale = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1;
+canvas.width = img.width * scale;
+canvas.height = img.height * scale;
+const ctx = canvas.getContext('2d');
+ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+const base64 = canvas.toDataURL('image/jpeg', 0.8);
+const response = await fetch(base64);
+const blob = await response.blob();
+// 1. Загружаем файл в бакет 'recipes'
+const fileName = "recipe_" + currentModalId + "_" + Date.now() + ".jpg";
+const { error: uploadError } = await db.storage
+.from('recipes')
+.upload(fileName, blob, { contentType: 'image/jpeg' });
+if (uploadError) throw uploadError;
+// 2. Получаем публичную ссылку
+const { data: urlData } = db.storage
+.from('recipes')
+.getPublicUrl(fileName);
+const publicUrl = urlData.publicUrl;
+// 3. Сохраняем в таблицу 'custom_images'
+const { error: dbError } = await db
+.from('custom_images')
+.upsert({
+recipe_id: currentModalId,
+image_url: publicUrl
+}, { onConflict: 'recipe_id' });
+if (dbError) throw dbError;
+alert("✅ Фото успешно обновлено в облаке!");
+await loadImagesFromCloud();
+} catch (err) {
+alert("Ошибка: " + (err.message || err));
+} finally {
+document.getElementById("loading-overlay").style.display = "none";
+event.target.value = "";
 }
-
+};
+img.src = e.target.result;
+};
+reader.readAsDataURL(file);
+}
 async function resetImage() {
-  if (!isAdmin) return;
-  if (!currentModalId) return;
-  
-  if (!confirm("Вы уверены, что хотите удалить облачное фото и вернуть стандартное?")) return;
-
-  document.getElementById("loading-overlay").style.display = "flex";
-
-  // 1. Удаляем запись из базы данных
-  const { error: dbError } = await supabase
-    .from('custom_images')
-    .delete()
-    .eq('recipe_id', currentModalId);
-
-  if (dbError) {
-    document.getElementById("loading-overlay").style.display = "none";
-    alert("Ошибка удаления из базы: " + dbError.message);
-    return;
-  }
-
-  // 2. (Опционально) Можно удалить и сам файл из хранилища, но для простоты просто обновляем список
-  document.getElementById("loading-overlay").style.display = "none";
-  alert("✅ Фото сброшено!");
-  loadImagesFromCloud(); // Перезагружаем данные
+if (!isAdmin || !currentModalId) return;
+if (!confirm("Вы уверены, что хотите удалить облачное фото и вернуть стандартное?")) return;
+document.getElementById("loading-overlay").style.display = "flex";
+try {
+const { error: dbError } = await db
+.from('custom_images')
+.delete()
+.eq('recipe_id', currentModalId);
+if (dbError) throw dbError;
+alert("✅ Фото сброшено!");
+await loadImagesFromCloud();
+} catch (err) {
+alert("Ошибка удаления: " + (err.message || err));
+} finally {
+document.getElementById("loading-overlay").style.display = "none";
 }
-
-/* ---------- ОСТАЛЬНОЙ КОД (Избранное, Рендер, Модальное окно) ---------- */
-// ... (код toggleFav, renderFilters, renderGrid, openModal, closeModal оставь без изменений) ...
-
-// В функции renderGrid и openModal замени `customImages[r.id]` на `customImages[r.id]`
-// (оно уже так и есть, менять ничего не нужно, просто убедись, что customImages берется из загруженных данных)
-
-// Инициализация
+}
+/* ---------- ИЗБРАННОЕ, ФИЛЬТРЫ И РЕНДЕР ---------- */
+function toggleFav(event, id) {
+event.stopPropagation();
+if (favorites.includes(id)) {
+favorites = favorites.filter(f => f !== id);
+} else {
+favorites.push(id);
+}
+localStorage.setItem("recipe_favs", JSON.stringify(favorites));
+renderGrid();
+}
+function toggleFavFilter() {
+onlyFavorites = !onlyFavorites;
+document.getElementById("fav-filter-btn").classList.toggle("active", onlyFavorites);
+renderGrid();
+}
+function renderFilters() {
+const categories = ["Все", ...new Set(recipes.map(r => r.category))];
+const container = document.getElementById("filters-container");
+container.innerHTML = categories.map(cat =>
+'' + cat + ''
+).join("");
+}
+function setCategory(cat) {
+activeCategory = cat;
+renderFilters();
+renderGrid();
+}
+function renderGrid() {
+const query = document.getElementById("search-input").value.toLowerCase().trim();
+const grid = document.getElementById("recipes-grid");
+const filtered = recipes.filter(r => {
+const matchCat = activeCategory === "Все" || r.category === activeCategory;
+const matchFav = !onlyFavorites || favorites.includes(r.id);
+const matchQuery = r.title.toLowerCase().includes(query) ||
+r.ingredients.some(i => i.toLowerCase().includes(query));
+return matchCat && matchFav && matchQuery;
+});
+if (filtered.length === 0) {
+grid.innerHTML = 'Рецепты не найдены 🍽';
+return;
+}
+grid.innerHTML = filtered.map(r => {
+const isFav = favorites.includes(r.id);
+const imgSrc = customImages[r.id] || r.image;
+return (
+'' +
+'' +
+(isFav ? "❤️" : "🤍") +
+'' +
+'' +
+'' +
+'' + r.category + '' +
+'' + r.title + '' +
+'' +
+'⏱ ' + r.time + '' +
+'Ингредиентов: ' + r.ingredients.length + '' +
+'' +
+'' +
+''
+);
+}).join("");
+}
+/* ---------- МОДАЛЬНОЕ ОКНО ---------- */
+function openModal(id) {
+const r = recipes.find(item => item.id === id);
+if (!r) return;
+currentModalId = id;
+document.getElementById("modal-img").src = customImages[r.id] || r.image;
+document.getElementById("modal-cat").textContent = r.category;
+document.getElementById("modal-title").textContent = r.title;
+document.getElementById("modal-time").textContent = "⏱ Время приготовления: " + r.time;
+document.getElementById("modal-ingredients").innerHTML = r.ingredients.map(i => "" + i + "").join("");
+document.getElementById("modal-steps").innerHTML = r.steps.map(s => "" + s + "").join("");
+document.getElementById("recipe-modal").classList.add("open");
+}
+function closeModal() {
+document.getElementById("recipe-modal").classList.remove("open");
+currentModalId = null;
+}
+/* ---------- ИНИЦИАЛИЗАЦИЯ ---------- */
 updateAdminUI();
 renderFilters();
 renderGrid();
-</script>
-</body>
-</html>
+loadImagesFromCloud();
