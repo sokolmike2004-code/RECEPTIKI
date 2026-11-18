@@ -5,461 +5,109 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Книга Рецептов 🍳</title>
 <style>
-  /* ... (все стили оставь точно такими же, как в прошлом коде) ... */
+  :root {
+    --bg: #fdf8f0; --card: #ffffff; --primary: #e67e22; --primary-dark: #d35400;
+    --text: #2c2c2c; --muted: #777; --border: #ede0d0; --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  header { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); color: white; padding: 40px 20px; text-align: center; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  header h1 { font-size: 42px; margin-bottom: 8px; position: relative; z-index: 1; }
+  header p { font-size: 17px; opacity: 0.95; position: relative; z-index: 1; }
+  .admin-btn { position: absolute; top: 20px; right: 20px; z-index: 10; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; backdrop-filter: blur(4px); }
+  .admin-btn:hover { background: rgba(255,255,255,0.3); }
+  .admin-btn.active { background: #c0392b; border-color: #c0392b; }
+  .toolbar { max-width: 1200px; margin: 24px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+  .search-row { display: flex; gap: 12px; width: 100%; max-width: 800px; flex-wrap: wrap; justify-content: center; }
+  .search-box { flex: 1; min-width: 240px; position: relative; }
+  .search-box input { width: 100%; padding: 12px 16px 12px 44px; border: 2px solid var(--border); border-radius: 30px; font-size: 15px; background: var(--card); outline: none; transition: all 0.2s; }
+  .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.15); }
+  .search-box::before { content: "🔍"; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 16px; }
+  .search-box.fridge-search::before { content: "🥦"; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .filter-btn { padding: 10px 18px; border: 2px solid var(--border); background: var(--card); color: var(--text); border-radius: 30px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+  .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .filter-btn.fav-filter.active { background: #e74c3c; border-color: #e74c3c; color: white; }
+  .grid { max-width: 1200px; margin: 0 auto 60px; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+  .card { background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.25s, box-shadow 0.25s; position: relative; display: flex; flex-direction: column; }
+  .card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,0.14); }
+  .card-image { height: 200px; position: relative; background: #f0e6d8; overflow: hidden; }
+  .card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+  .card:hover .card-image img { transform: scale(1.08); }
+  .fav-btn { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; border: none; background: rgba(255,255,255,0.9); border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 3; display: flex; align-items: center; justify-content: center; }
+  .fav-btn.active { background: #ffe6e6; }
+  .card-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .card-title { font-size: 19px; font-weight: 700; }
+  .card-desc { font-size: 14px; color: var(--muted); flex: 1; }
+  .card-meta { display: flex; gap: 14px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; }
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { padding: 3px 10px; background: #fff4e6; color: var(--primary-dark); border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .calories-badge { padding: 3px 10px; background: #ffe6e6; color: #c0392b; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .weight-badge { padding: 3px 10px; background: #e8f4fd; color: #2980b9; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--card); border-radius: 20px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; animation: slideUp 0.3s; }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-hero { height: 240px; position: relative; }
+  .modal-hero img { width: 100%; height: 100%; object-fit: cover; }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 38px; height: 38px; border: none; background: rgba(255,255,255,0.9); border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 2; }
+  .modal-fav { position: absolute; top: 16px; left: 16px; width: 42px; height: 42px; border: none; background: rgba(255,255,255,0.9); border-radius: 50%; cursor: pointer; font-size: 22px; z-index: 2; }
+  .modal-fav.active { background: #ffe6e6; }
+  .modal-header { padding: 22px 30px 4px; }
+  .modal-header h2 { font-size: 26px; margin-bottom: 6px; }
+  .modal-body { padding: 18px 30px 30px; }
+  
+  .upload-row { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .upload-btn, .reset-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; transition: opacity 0.2s; }
+  .upload-btn { background: var(--primary); color: white; }
+  .upload-btn:hover { opacity: 0.9; }
+  .reset-btn { background: #eee; color: #555; }
+  .reset-btn:hover { background: #ddd; }
+  
+  .meta-row { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-item .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .meta-item .value { font-size: 15px; font-weight: 600; }
+  .meta-item .value.calories { color: #c0392b; }
+  .meta-item .value.weight { color: #2980b9; }
+  .modal-body h3 { font-size: 17px; margin: 20px 0 10px; color: var(--primary-dark); }
+  .modal-body ul, .modal-body ol { padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+  .modal-body li { font-size: 15px; }
+  footer { text-align: center; padding: 30px; color: var(--muted); border-top: 1px solid var(--border); max-width: 1200px; margin: 0 auto; }
+  #loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; font-size: 20px; font-weight: bold; color: var(--primary); backdrop-filter: blur(2px); }
+  
+  @media (max-width: 600px) {
+    header h1 { font-size: 30px; }
+    .grid { grid-template-columns: 1fr; }
+    .modal-body { padding: 18px 20px 24px; }
+    .search-row { flex-direction: column; }
+    .admin-btn { top: 10px; right: 10px; padding: 6px 10px; font-size: 12px; }
+  }
 </style>
 <!-- Подключаем Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Книга Рецептов 🍳</title>
-<style>
-  :root {
-    --bg: #fdf8f0;
-    --card: #ffffff;
-    --primary: #e67e22;
-    --primary-dark: #d35400;
-    --text: #2c2c2c;
-    --muted: #777;
-    --border: #ede0d0;
-    --shadow: 0 4px 20px rgba(0,0,0,0.08);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-  }
-
-  header {
-    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
-    color: white;
-    padding: 40px 20px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: "🍳";
-    position: absolute;
-    font-size: 200px;
-    opacity: 0.08;
-    top: -40px;
-    left: 30px;
-    transform: rotate(-15deg);
-  }
-  header::after {
-    content: "🥗";
-    position: absolute;
-    font-size: 200px;
-    opacity: 0.08;
-    bottom: -60px;
-    right: 30px;
-    transform: rotate(15deg);
-  }
-  header h1 { font-size: 42px; margin-bottom: 8px; position: relative; z-index: 1; }
-  header p  { font-size: 17px; opacity: 0.95; position: relative; z-index: 1; }
-
-  /* Кнопка админа в шапке */
-  .admin-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 10;
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.5);
-    color: white;
-    padding: 8px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    backdrop-filter: blur(4px);
-    transition: all 0.2s;
-  }
-  .admin-btn:hover { background: rgba(255,255,255,0.3); }
-  .admin-btn.active { background: #c0392b; border-color: #c0392b; }
-
-  .toolbar {
-    max-width: 1200px;
-    margin: 24px auto;
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-  }
-  
-  .search-row {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    max-width: 800px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .search-box {
-    flex: 1;
-    min-width: 240px;
-    position: relative;
-  }
-  .search-box input {
-    width: 100%;
-    padding: 12px 16px 12px 44px;
-    border: 2px solid var(--border);
-    border-radius: 30px;
-    font-size: 15px;
-    background: var(--card);
-    transition: all 0.2s;
-    outline: none;
-  }
-  .search-box input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.15);
-  }
-  .search-box::before {
-    content: "🔍";
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-  }
-  
-  .search-box.fridge-search::before { content: "🥦"; }
-
-  .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  .filter-btn {
-    padding: 10px 18px;
-    border: 2px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    border-radius: 30px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-  .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
-  .filter-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-  }
-  .filter-btn.fav-filter.active {
-    background: #e74c3c;
-    border-color: #e74c3c;
-    color: white;
-  }
-
-  .grid {
-    max-width: 1200px;
-    margin: 0 auto 60px;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-  }
-  .card {
-    background: var(--card);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    transition: transform 0.25s, box-shadow 0.25s;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-  .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.14);
-  }
-  .card-image {
-    height: 200px;
-    overflow: hidden;
-    position: relative;
-    background: #f0e6d8;
-  }
-  .card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s;
-    display: block;
-  }
-  .card:hover .card-image img { transform: scale(1.08); }
-  .fav-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 38px;
-    height: 38px;
-    border: none;
-    background: rgba(255,255,255,0.9);
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s, background 0.2s;
-    z-index: 3;
-    line-height: 1;
-  }
-  .fav-btn:hover { transform: scale(1.15); background: white; }
-  .fav-btn.active { background: #ffe6e6; }
-  .card-body {
-    padding: 18px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .card-title { font-size: 19px; font-weight: 700; color: var(--text); }
-  .card-desc  { font-size: 14px; color: var(--muted); flex: 1; }
-  .card-meta {
-    display: flex;
-    gap: 14px;
-    font-size: 13px;
-    color: var(--muted);
-    border-top: 1px solid var(--border);
-    padding-top: 12px;
-    flex-wrap: wrap;
-  }
-  .card-meta span { display: flex; align-items: center; gap: 4px; }
-
-  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; }
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    background: #fff4e6;
-    color: var(--primary-dark);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .calories-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    background: #ffe6e6;
-    color: #c0392b;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .weight-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    background: #e8f4fd;
-    color: #2980b9;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .empty {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-  .empty .emoji { font-size: 60px; display: block; margin-bottom: 12px; }
-
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 100;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.open { display: flex; animation: fadeIn 0.2s; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  .modal {
-    background: var(--card);
-    border-radius: 20px;
-    max-width: 700px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: slideUp 0.3s;
-    position: relative;
-  }
-  .modal-hero {
-    height: 240px;
-    overflow: hidden;
-    border-radius: 20px 20px 0 0;
-    position: relative;
-  }
-  .modal-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .modal-hero::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.35));
-  }
-  .modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 38px;
-    height: 38px;
-    border: none;
-    background: rgba(255,255,255,0.9);
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s, transform 0.2s;
-    z-index: 2;
-  }
-  .modal-close:hover { background: white; transform: rotate(90deg); }
-  .modal-fav {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    width: 42px;
-    height: 42px;
-    border: none;
-    background: rgba(255,255,255,0.9);
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s, background 0.2s;
-    z-index: 2;
-    line-height: 1;
-  }
-  .modal-fav:hover { transform: scale(1.15); background: white; }
-  .modal-fav.active { background: #ffe6e6; }
-
-  .modal-header { padding: 22px 30px 4px; }
-  .modal-header h2 { font-size: 26px; margin-bottom: 6px; }
-  .modal-header p  { color: var(--muted); font-size: 15px; }
-
-  .modal-body { padding: 18px 30px 30px; }
-  
-  .upload-row {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .upload-btn, .reset-btn {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: opacity 0.2s;
-  }
-  .upload-btn { background: var(--primary); color: white; }
-  .upload-btn:hover { opacity: 0.9; }
-  .reset-btn { background: #eee; color: #555; }
-  .reset-btn:hover { background: #ddd; }
-
-  .meta-row {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    padding: 16px 0;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  .meta-item { display: flex; flex-direction: column; gap: 2px; }
-  .meta-item .label {
-    font-size: 12px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .meta-item .value { font-size: 15px; font-weight: 600; }
-  .meta-item .value.calories { color: #c0392b; }
-  .meta-item .value.weight   { color: #2980b9; }
-
-  .modal-body h3 {
-    font-size: 17px;
-    margin: 20px 0 10px;
-    color: var(--primary-dark);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .modal-body ul, .modal-body ol {
-    padding-left: 22px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .modal-body li { font-size: 15px; }
-  .modal-body ol li::marker { color: var(--primary); font-weight: 700; }
-
-  footer {
-    text-align: center;
-    padding: 30px 20px;
-    color: var(--muted);
-    font-size: 14px;
-    border-top: 1px solid var(--border);
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  @media (max-width: 600px) {
-    header h1 { font-size: 30px; }
-    .grid { grid-template-columns: 1fr; }
-    .modal-body { padding: 18px 20px 24px; }
-    .modal-header { padding: 18px 20px 4px; }
-    .modal-hero { height: 180px; }
-    .search-row { flex-direction: column; }
-    .admin-btn { top: 10px; right: 10px; padding: 6px 10px; font-size: 12px; }
-  }
-</style>
-</head>
-<body>
+<div id="loading-overlay">⏳ Загрузка в облако... Пожалуйста, подождите.</div>
 
 <header>
-  <!-- Кнопка Админа -->
   <button id="adminBtn" class="admin-btn" onclick="toggleAdminMode()">🔒 Войти как админ</button>
-  
   <h1>🍳 Книга Рецептов</h1>
   <p>Простые и вкусные рецепты на каждый день</p>
 </header>
 
 <div class="toolbar">
   <div class="search-row">
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Поиск по названию...">
-    </div>
-    <div class="search-box fridge-search">
-      <input type="text" id="ingredientInput" placeholder="Что в холодильнике? (например: курица, сыр)">
-    </div>
+    <div class="search-box"><input type="text" id="searchInput" placeholder="Поиск по названию..."></div>
+    <div class="search-box fridge-search"><input type="text" id="ingredientInput" placeholder="Что в холодильнике? (например: курица, сыр)"></div>
   </div>
   <div class="filters" id="filters"></div>
 </div>
 
 <div class="grid" id="grid"></div>
-
 <footer>Сделано с ❤️ · Все рецепты проверены</footer>
 
 <div class="modal-overlay" id="modal">
@@ -469,18 +117,15 @@
       <button class="modal-fav" id="mFavBtn" onclick="toggleFavFromModal()">🤍</button>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-header">
-      <h2 id="mTitle"></h2>
-      <p id="mDesc"></p>
-    </div>
+    <div class="modal-header"><h2 id="mTitle"></h2><p id="mDesc"></p></div>
     <div class="modal-body">
-      <!-- Блок загрузки фото (скрыт для обычных пользователей) -->
+      <!-- Блок загрузки фото (виден только админу) -->
       <div class="upload-row" id="uploadRow" style="display: none;">
-        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📷 Загрузить свое фото</button>
-        <button class="reset-btn" id="resetImgBtn" onclick="resetImage()" style="display:none;">🔄 Сбросить фото</button>
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📷 Загрузить фото в облако</button>
+        <button class="reset-btn" id="resetImgBtn" onclick="resetImage()" style="display:none;">🔄 Вернуть стандартное</button>
         <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
       </div>
-
+      
       <div class="meta-row">
         <div class="meta-item"><span class="label">Категория</span><span class="value" id="mCat"></span></div>
         <div class="meta-item"><span class="label">Время</span><span class="value" id="mTime"></span></div>
@@ -489,523 +134,30 @@
         <div class="meta-item"><span class="label">Сложность</span><span class="value" id="mDiff"></span></div>
         <div class="meta-item"><span class="label">Калорийность</span><span class="value calories" id="mCal"></span></div>
       </div>
-      <h3>🧾 Ингредиенты</h3>
-      <ul id="mIngr"></ul>
-      <h3>👨‍🍳 Приготовление</h3>
-      <ol id="mSteps"></ol>
+      <h3>🧾 Ингредиенты</h3><ul id="mIngr"></ul>
+      <h3>👨‍🍳 Приготовление</h3><ol id="mSteps"></ol>
     </div>
   </div>
 </div>
 
 <script>
 /* =====================================================
-   БАЗА РЕЦЕПТОВ (30 штук)
+   ВАШИ КЛЮЧИ SUPABASE
    ===================================================== */
-
-const recipes = [
-  // --- 20 БАЗОВЫХ РЕЦЕПТОВ ---
-  {
-    id: 1, title: "Паста Карбонара", img: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=800&q=80&auto=format&fit=crop",
-    desc: "Классическая итальянская паста с беконом и яйцом", category: "Основное", time: "25 мин", servings: "2", difficulty: "Средне", calories: 380, weight: "450 г",
-    ingredients: ["Спагетти — 200 г","Бекон — 150 г","Яйца — 2 шт","Пармезан — 50 г","Чеснок — 1 зубчик","Соль, перец"],
-    steps: ["Отварите спагетти в подсоленной воде до готовности.","Обжарьте бекон на сковороде до хруста.","Взбейте яйца с тёртым пармезаном.","Смешайте горячую пасту с беконом, снимите с огня.","Добавьте яичную смесь, быстро перемешайте.","Подавайте, посыпав пармезаном и перцем."]
-  },
-  {
-    id: 2, title: "Греческий салат", img: "img/greek.jpg",
-    desc: "Свежий салат с фетой, огурцом и маслинами", category: "Салаты", time: "15 мин", servings: "3", difficulty: "Легко", calories: 120, weight: "600 г",
-    ingredients: ["Помидоры — 3 шт","Огурцы — 2 шт","Фета — 150 г","Маслины — 100 г","Красный лук — 1/2","Оливковое масло","Орегано"],
-    steps: ["Нарежьте помидоры крупными кусками.","Нарежьте огурцы полукружьями.","Лук нарежьте тонкими полукольцами.","Смешайте овощи, добавьте маслины.","Сверху выложите кубики феты.","Заправьте маслом, посыпьте орегано."]
-  },
-  {
-    id: 3, title: "Борщ", img: "img/borsh.jpg",
-    desc: "Насыщенный украинский суп со свёклой и мясом", category: "Супы", time: "1.5 ч", servings: "6", difficulty: "Средне", calories: 85, weight: "2.5 кг",
-    ingredients: ["Говядина — 500 г","Свёкла — 2 шт","Капуста — 300 г","Картофель — 3 шт","Морковь — 1","Лук — 1","Томатная паста — 2 ст.л.","Сметана, чеснок"],
-    steps: ["Сварите бульон из мяса (около 1 часа).","Добавьте нарезанный картофель.","Обжарьте лук, морковь и свёклу с томатной пастой.","Добавьте зажарку в бульон.","Положите нашинкованную капусту, варите 10 мин.","Дайте настояться, подавайте со сметаной."]
-  },
-  {
-    id: 4, title: "Блины", img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80&auto=format&fit=crop",
-    desc: "Тонкие блины на молоке — к завтраку и не только", category: "Завтрак", time: "30 мин", servings: "4", difficulty: "Легко", calories: 230, weight: "700 г",
-    ingredients: ["Мука — 200 г","Молоко — 500 мл","Яйца — 2 шт","Сахар — 2 ст.л.","Соль — щепотка","Растительное масло — 2 ст.л."],
-    steps: ["Взбейте яйца с сахаром и солью.","Добавьте молоко, перемешайте.","Просейте муку, размешайте до однородности.","Добавьте масло, дайте тесту постоять 10 мин.","Жарьте на разогретой сковороде с двух сторон.","Подавайте с маслом, вареньем или сметаной."]
-  },
-  {
-    id: 5, title: "Шарлотка", img: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?w=800&q=80&auto=format&fit=crop",
-    desc: "Простой яблочный пирог из доступных продуктов", category: "Десерт", time: "50 мин", servings: "6", difficulty: "Легко", calories: 260, weight: "1.2 кг",
-    ingredients: ["Яйца — 4 шт","Сахар — 200 г","Мука — 200 г","Яблоки — 4 шт","Разрыхлитель — 1 ч.л.","Корица — по вкусу"],
-    steps: ["Взбейте яйца с сахаром до пышной массы.","Просейте муку с разрыхлителем, аккуратно смешайте.","Нарежьте яблоки ломтиками.","Выложите яблоки в форму, посыпьте корицей.","Залейте тестом, разровняйте.","Выпекайте 35 мин при 180°C. Проверьте зубочисткой."]
-  },
-  {
-    id: 6, title: "Куриные котлеты", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80&auto=format&fit=crop",
-    desc: "Сочные домашние котлеты из куриного фарша", category: "Основное", time: "40 мин", servings: "4", difficulty: "Легко", calories: 220, weight: "700 г",
-    ingredients: ["Куриный фарш — 500 г","Лук — 1 шт","Яйцо — 1 шт","Хлеб — 2 ломтика","Молоко — 100 мл","Соль, перец","Панировочные сухари"],
-    steps: ["Замочите хлеб в молоке.","Измельчите лук.","Смешайте фарш, лук, яйцо и отжатый хлеб.","Посолите, поперчите, перемешайте.","Сформируйте котлеты, обваляйте в сухарях.","Обжарьте с двух сторон до золотистой корочки."]
-  },
-  {
-    id: 7, title: "Овсяная каша", img: "img/ovsyanka.jpg",
-    desc: "Полезный завтрак с ягодами и мёдом", category: "Завтрак", time: "10 мин", servings: "1", difficulty: "Легко", calories: 150, weight: "300 г",
-    ingredients: ["Овсяные хлопья — 60 г","Молоко — 250 мл","Мёд — 1 ст.л.","Ягоды — по вкусу","Щепотка соли"],
-    steps: ["Залейте хлопья молоком.","Доведите до кипения на медленном огне.","Варите 5–7 минут, помешивая.","Добавьте соль, снимите с огня.","Подавайте с мёдом и ягодами."]
-  },
-  {
-    id: 8, title: "Пицца Маргарита", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80&auto=format&fit=crop",
-    desc: "Домашняя пицца с томатами и моцареллой", category: "Основное", time: "1 ч 20 мин", servings: "2", difficulty: "Средне", calories: 270, weight: "600 г",
-    ingredients: ["Мука — 300 г","Вода — 180 мл","Дрожжи — 5 г","Сахар — 1 ч.л.","Моцарелла — 200 г","Томатный соус — 150 г","Базилик"],
-    steps: ["Растворите дрожжи с сахаром в тёплой воде.","Замесите тесто с мукой, оставьте на 1 час.","Раскатайте тесто в круг.","Смажьте томатным соусом.","Выложите кусочки моцареллы.","Выпекайте 12–15 мин при 250°C. Посыпьте базиликом."]
-  },
-  {
-    id: 9, title: "Сырный суп", img: "https://images.pexels.com/photos/37593663/pexels-photo-37593663.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Нежный крем-суп с плавленым сыром", category: "Супы", time: "35 мин", servings: "4", difficulty: "Легко", calories: 130, weight: "1.5 кг",
-    ingredients: ["Куриный бульон — 1 л","Плавленый сыр — 200 г","Картофель — 2 шт","Морковь — 1","Лук — 1","Зелень","Соль, перец"],
-    steps: ["Сварите бульон.","Добавьте нарезанный картофель, варите 15 мин.","Обжарьте лук и морковь.","Добавьте зажарку в суп.","Растворите плавленый сыр в супе.","Проварите 5 мин, добавьте зелень."]
-  },
-  {
-    id: 10, title: "Цезарь с курицей", img: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800&q=80&auto=format&fit=crop",
-    desc: "Классический салат с курицей, сухариками и пармезаном", category: "Салаты", time: "30 мин", servings: "2", difficulty: "Средне", calories: 180, weight: "400 г",
-    ingredients: ["Куриное филе — 300 г","Романо — 1 пучок","Пармезан — 50 г","Белый хлеб — 3 ломтика","Соус цезарь","Чеснок","Оливковое масло"],
-    steps: ["Обжарьте куриное филе до готовности.","Нарежьте хлеб кубиками и подсушите.","Порвите салат руками.","Нарежьте курицу полосками.","Смешайте салат, курицу и сухарики.","Заправьте соусом, посыпьте пармезаном."]
-  },
-  {
-    id: 11, title: "Грибной крем-суп", img: "https://images.pexels.com/photos/2548840/pexels-photo-2548840.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Бархатистый суп из шампиньонов со сливками", category: "Супы", time: "40 мин", servings: "4", difficulty: "Средне", calories: 140, weight: "1.4 кг",
-    ingredients: ["Шампиньоны — 400 г","Лук — 1 шт","Сливки — 200 мл","Картофель — 2 шт","Масло — 30 г","Соль, перец","Зелень"],
-    steps: ["Обжарьте лук на масле до прозрачности.","Добавьте нарезанные грибы, жарьте 10 мин.","Добавьте картофель и воду, варите 15 мин.","Пробейте суп блендером до однородности.","Влейте сливки, прогрейте.","Подавайте с зеленью и сухариками."]
-  },
-  {
-    id: 12, title: "Тирамису", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80&auto=format&fit=crop",
-    desc: "Итальянский десерт с маскарпоне и кофе", category: "Десерт", time: "30 мин + охлаждение", servings: "6", difficulty: "Средне", calories: 320, weight: "900 г",
-    ingredients: ["Маскарпоне — 500 г","Савоярди — 200 г","Яйца — 4 шт","Сахар — 100 г","Кофе — 200 мл","Какао — 2 ст.л."],
-    steps: ["Сварите крепкий кофе, остудите.","Взбейте яйца с сахаром.","Добавьте маскарпоне, перемешайте.","Обмакните савоярди в кофе, выложите слоем.","Чередуйте слои печенья и крема.","Посыпьте какао, охладите 4 часа."]
-  },
-  {
-    id: 13, title: "Сырники", img: "img/syrniki.jpg",
-    desc: "Нежные творожные сырники на завтрак", category: "Завтрак", time: "25 мин", servings: "3", difficulty: "Легко", calories: 210, weight: "500 г",
-    ingredients: ["Творог — 400 г","Яйцо — 1 шт","Мука — 3 ст.л.","Сахар — 2 ст.л.","Ванилин — щепотка","Растительное масло"],
-    steps: ["Разомните творог вилкой.","Добавьте яйцо, сахар и ванилин.","Всыпьте муку, замесите массу.","Сформируйте сырники, обваляйте в муке.","Обжарьте на среднем огне с двух сторон.","Подавайте со сметаной или вареньем."]
-  },
-  {
-    id: 14, title: "Оливье", img: "https://images.pexels.com/photos/35572936/pexels-photo-35572936.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Классический праздничный салат", category: "Салаты", time: "40 мин", servings: "6", difficulty: "Легко", calories: 190, weight: "1.3 кг",
-    ingredients: ["Картофель — 4 шт","Морковь — 2 шт","Яйца — 4 шт","Колбаса — 300 г","Огурцы солёные — 3 шт","Горошек — 1 банка","Майонез"],
-    steps: ["Отварите картофель, морковь и яйца.","Остудите и нарежьте кубиками.","Нарежьте колбасу и огурцы.","Добавьте горошек.","Заправьте майонезом.","Посолите и перемешайте."]
-  },
-  {
-    id: 15, title: "Плов", img: "https://images.pexels.com/photos/14286683/pexels-photo-14286683.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Узбекский плов с бараниной и морковью", category: "Основное", time: "1.5 ч", servings: "6", difficulty: "Сложно", calories: 300, weight: "2 кг",
-    ingredients: ["Рис — 500 г","Баранина — 600 г","Морковь — 4 шт","Лук — 2 шт","Чеснок — 1 головка","Растительное масло","Зира, барбарис, соль"],
-    steps: ["Обжарьте мясо до корочки в казане.","Добавьте лук, жарьте до золотистого.","Добавьте морковь соломкой.","Влейте воду, тушите 20 мин.","Выложите рис, добавьте специи и чеснок.","Варите под крышкой 20 мин, дайте постоять."]
-  },
-  {
-    id: 16, title: "Стейк из говядины", img: "https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=800&q=80&auto=format&fit=crop",
-    desc: "Сочный стейк рибай с розмарином", category: "Основное", time: "20 мин", servings: "1", difficulty: "Средне", calories: 350, weight: "300 г",
-    ingredients: ["Стейк рибай — 300 г","Сливочное масло — 30 г","Чеснок — 2 зубчика","Розмарин","Соль, перец","Оливковое масло"],
-    steps: ["Достаньте стейк за 30 мин до готовки.","Посолите и поперчите с двух сторон.","Разогрейте сковороду до максимума.","Обжарьте по 2–3 мин с каждой стороны.","Добавьте масло, чеснок, розмарин, полейте стейк.","Дайте отдохнуть 5 мин перед подачей."]
-  },
-  {
-    id: 17, title: "Брускетта", img: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800&q=80&auto=format&fit=crop",
-    desc: "Итальянская закуска с томатами на тостах", category: "Закуски", time: "15 мин", servings: "4", difficulty: "Легко", calories: 160, weight: "350 г",
-    ingredients: ["Багет — 1 шт","Помидоры — 4 шт","Чеснок — 2 зубчика","Базилик","Оливковое масло","Соль, перец"],
-    steps: ["Нарежьте багет ломтиками.","Подсушите в духовке или на гриле.","Натрите тосты чесноком.","Нарежьте помидоры кубиками.","Смешайте с базиликом, маслом, солью.","Выложите томаты на тосты."]
-  },
-  {
-    id: 18, title: "Ризотто с грибами", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800&q=80&auto=format&fit=crop",
-    desc: "Кремовое итальянское ризотто с шампиньонами", category: "Основное", time: "35 мин", servings: "3", difficulty: "Средне", calories: 250, weight: "900 г",
-    ingredients: ["Рис арборио — 300 г","Шампиньоны — 300 г","Лук — 1 шт","Бульон — 1 л","Пармезан — 50 г","Белое вино — 100 мл","Масло"],
-    steps: ["Обжарьте лук и грибы на масле.","Добавьте рис, обжарьте 1 мин.","Влейте вино, дайте испариться.","Постепенно добавляйте горячий бульон, помешивая.","Готовьте 18–20 мин до кремовой текстуры.","Добавьте пармезан и масло, перемешайте."]
-  },
-  {
-    id: 19, title: "Шоколадный брауни", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80&auto=format&fit=crop",
-    desc: "Влажный шоколадный брауни с орехами", category: "Десерт", time: "45 мин", servings: "8", difficulty: "Легко", calories: 400, weight: "800 г",
-    ingredients: ["Тёмный шоколад — 200 г","Масло — 150 г","Яйца — 3 шт","Сахар — 200 г","Мука — 100 г","Грецкие орехи — 100 г","Какао — 2 ст.л."],
-    steps: ["Растопите шоколад с маслом.","Взбейте яйца с сахаром.","Смешайте шоколадную массу с яйцами.","Добавьте муку и какао.","Вмешайте орехи, вылейте в форму.","Выпекайте 25 мин при 180°C."]
-  },
-  {
-    id: 20, title: "Лимонад домашний", img: "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800&q=80&auto=format&fit=crop",
-    desc: "Освежающий лимонад с мятой и лимоном", category: "Напитки", time: "10 мин", servings: "4", difficulty: "Легко", calories: 45, weight: "1.2 л",
-    ingredients: ["Лимоны — 3 шт","Сахар — 100 г","Вода — 1 л","Мята — пучок","Лёд — по вкусу"],
-    steps: ["Вскипятите воду с сахаром, остудите.","Выжмите сок из лимонов.","Смешайте сок с сиропом.","Добавьте мяту и лёд.","Дайте настояться 10 мин.","Подавайте охлаждённым."]
-  },
-
-  // --- НОВЫЕ 10 РЕЦЕПТОВ ---
-  {
-    id: 21, title: "Окрошка", img: "https://images.pexels.com/photos/5638247/pexels-photo-5638247.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Освежающий летний холодный суп на квасе", category: "Супы", time: "30 мин", servings: "4", difficulty: "Легко", calories: 60, weight: "1.5 кг",
-    ingredients: ["Квас — 1 л","Картофель — 3 шт","Яйца — 3 шт","Колбаса — 200 г","Огурцы — 2 шт","Редис — 5 шт","Зелень","Сметана"],
-    steps: ["Отварите картофель и яйца, остудите.","Нарежьте картофель, яйца, колбасу и овощи мелкими кубиками.","Смешайте все ингредиенты в кастрюле.","Добавьте мелко нарезанную зелень и соль.","Залейте квасом и добавьте ложку сметаны перед подачей."]
-  },
-  {
-    id: 22, title: "Бефстроганов", img: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=800&q=80&auto=format&fit=crop",
-    desc: "Нежная говядина в сливочно-грибном соусе", category: "Основное", time: "40 мин", servings: "4", difficulty: "Средне", calories: 220, weight: "800 г",
-    ingredients: ["Говядина — 500 г","Шампиньоны — 200 г","Лук — 1 шт","Сливки — 200 мл","Мука — 1 ст.л.","Соль, перец","Масло"],
-    steps: ["Нарежьте мясо тонкими брусочками, обжарьте на масле до румяной корочки.","Добавьте лук и грибы, жарьте 10 минут.","Посыпьте мукой, перемешайте.","Влейте сливки, посолите и поперчите.","Тушите 10-15 минут на медленном огне до загустения."]
-  },
-  {
-    id: 23, title: "Капрезе", img: "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=800&q=80&auto=format&fit=crop",
-    desc: "Итальянская закуска из томатов, моцареллы и базилика", category: "Закуски", time: "10 мин", servings: "2", difficulty: "Легко", calories: 180, weight: "300 г",
-    ingredients: ["Помидоры — 3 шт","Моцарелла — 200 г","Базилик — пучок","Оливковое масло","Бальзамический соус","Соль, перец"],
-    steps: ["Нарежьте помидоры и моцареллу кружочками одинаковой толщины.","Выложите на тарелку, чередуя томат и сыр.","Добавьте листья базилика.","Полейте оливковым маслом и бальзамическим соусом.","Посолите и поперчите по вкусу."]
-  },
-  {
-    id: 24, title: "Картофельное пюре", img: "https://images.unsplash.com/photo-1600628421066-f6bda6a7b976?w=800&q=80&auto=format&fit=crop",
-    desc: "Идеальный гарнир — нежное и сливочное пюре", category: "Основное", time: "30 мин", servings: "4", difficulty: "Легко", calories: 130, weight: "600 г",
-    ingredients: ["Картофель — 700 г","Молоко — 150 мл","Сливочное масло — 50 г","Соль, перец","Зелень"],
-    steps: ["Очистите картофель и отварите до мягкости в подсоленной воде.","Слейте воду, добавьте сливочное масло.","Разомните картофель толкушкой.","Влейте горячее молоко, продолжая помешивать.","Взбейте до однородности, добавьте зелень."]
-  },
-  {
-    id: 25, title: "Куриный бульон", img: "https://images.pexels.com/photos/539451/pexels-photo-539451.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Прозрачный, наваристый бульон для восстановления сил", category: "Супы", time: "1.5 ч", servings: "4", difficulty: "Легко", calories: 50, weight: "2 л",
-    ingredients: ["Куриная тушка — 1 шт","Морковь — 1 шт","Лук — 1 шт","Лавровый лист","Перец горошком","Соль","Вода — 2.5 л"],
-    steps: ["Промойте курицу, залейте холодной водой и доведите до кипения.","Снимите пену, убавьте огонь.","Добавьте целую морковь, луковицу и специи.","Варите на медленном огне 1-1.5 часа.","Процедите бульон, мясо можно использовать отдельно."]
-  },
-  {
-    id: 26, title: "Гречка с грибами", img: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?w=800&q=80&auto=format&fit=crop",
-    desc: "Сытное и полезное блюдо на каждый день", category: "Основное", time: "30 мин", servings: "3", difficulty: "Легко", calories: 160, weight: "700 г",
-    ingredients: ["Гречка — 200 г","Шампиньоны — 300 г","Лук — 1 шт","Масло — 30 г","Соль, перец","Вода — 400 мл"],
-    steps: ["Промойте гречку, залейте водой и варите до готовности.","Нарежьте лук и грибы.","Обжарьте лук на масле до золотистого цвета, добавьте грибы.","Жарьте грибы до испарения жидкости.","Смешайте готовую гречку с грибами, посолите и поперчите."]
-  },
-  {
-    id: 27, title: "Чесночные гренки", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=800&q=80&auto=format&fit=crop",
-    desc: "Хрустящая закуска к супу или пиву", category: "Закуски", time: "15 мин", servings: "2", difficulty: "Легко", calories: 350, weight: "200 г",
-    ingredients: ["Белый хлеб — 4 ломтика","Чеснок — 3 зубчика","Оливковое масло — 3 ст.л.","Соль","Зелень"],
-    steps: ["Нарежьте хлеб брусочками.","Смешайте масло с выдавленным чесноком и солью.","Обмакните каждый кусочек хлеба в масло.","Выложите на противень и запекайте при 180°C 10 минут до хруста.","Посыпьте зеленью."]
-  },
-  {
-    id: 28, title: "Молочный коктейль", img: "https://images.pexels.com/photos/3727250/pexels-photo-3727250.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Классический сладкий напиток с мороженым", category: "Напитки", time: "5 мин", servings: "2", difficulty: "Легко", calories: 90, weight: "500 мл",
-    ingredients: ["Молоко — 300 мл","Мороженое — 150 г","Банан — 1 шт","Сироп — по вкусу"],
-    steps: ["Нарежьте банан кусочками.","Поместите в блендер молоко, мороженое и банан.","Взбивайте на высокой скорости 1-2 минуты.","Разлейте по стаканам и подавайте сразу."]
-  },
-  {
-    id: 29, title: "Панкейки", img: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?w=800&q=80&auto=format&fit=crop",
-    desc: "Пышные американские оладьи на кефире", category: "Завтрак", time: "20 мин", servings: "3", difficulty: "Легко", calories: 220, weight: "400 г",
-    ingredients: ["Мука — 200 г","Кефир — 200 мл","Яйцо — 1 шт","Сахар — 1 ст.л.","Сода — 0.5 ч.л.","Масло для жарки"],
-    steps: ["Смешайте кефир с содой, оставьте на 5 минут.","Взбейте яйцо с сахаром, добавьте кефир.","Всыпьте муку, замесите густое тесто.","Жарьте на разогретой сковороде с небольшим количеством масла.","Жарьте с двух сторон до золотистого цвета."]
-  },
-  {
-    id: 30, title: "Ленивая овсянка", img: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=800&q=80&auto=format&fit=crop",
-    desc: "Завтрак, который готовится вечером (овсянка в банке)", category: "Завтрак", time: "5 мин + ночь", servings: "1", difficulty: "Легко", calories: 180, weight: "250 г",
-    ingredients: ["Овсяные хлопья — 40 г","Молоко или йогурт — 100 мл","Семена чиа — 1 ч.л.","Фрукты/ягоды","Мёд"],
-    steps: ["Смешайте хлопья, семена чиа и молоко в банке.","Добавьте ложку мёда и перемешайте.","Закройте крышкой и уберите в холодильник на ночь.","Утром добавьте свежие фрукты или ягоды."]
-  }
-];
-
-/* ---------- РЕЖИМ АДМИНИСТРАТОРА ---------- */
-const ADMIN_PASSWORD = "mikerecept6752";
-let isAdmin = sessionStorage.getItem("recipe_isAdmin") === "true";
-
-function toggleAdminMode() {
-  if (isAdmin) {
-    // Выход из режима админа
-    isAdmin = false;
-    sessionStorage.setItem("recipe_isAdmin", "false");
-    updateAdminUI();
-    closeModal(); // Закрываем модалку на всякий случай
-  } else {
-    // Вход
-    const pass = prompt("Введите пароль для доступа к редактированию фото:");
-    if (pass === ADMIN_PASSWORD) {
-      isAdmin = true;
-      sessionStorage.setItem("recipe_isAdmin", "true");
-      updateAdminUI();
-      alert("✅ Доступ разрешен! Теперь вы можете менять фото рецептов.");
-    } else if (pass !== null) {
-      alert("❌ Неверный пароль!");
-    }
-  }
-}
-
-function updateAdminUI() {
-  const btn = document.getElementById("adminBtn");
-  if (isAdmin) {
-    btn.textContent = "🔓 Выйти из админа";
-    btn.classList.add("active");
-  } else {
-    btn.textContent = "🔒 Войти как админ";
-    btn.classList.remove("active");
-  }
-  
-  // Обновляем видимость кнопок в модальном окне, если оно сейчас открыто
-  const uploadRow = document.getElementById("uploadRow");
-  if (uploadRow) {
-    uploadRow.style.display = isAdmin ? "flex" : "none";
-  }
-}
-
-/* ---------- ПОЛЬЗОВАТЕЛЬСКИЕ ФОТО (localStorage) ---------- */
-let customImages = JSON.parse(localStorage.getItem("recipe_custom_images") || "{}");
-
-function getImgSrc(id, defaultImg) {
-  return customImages[id] || defaultImg;
-}
-
-function handleImageUpload(event) {
-  if (!isAdmin) return alert("У вас нет прав на изменение фото!");
-  
-  const file = event.target.files[0];
-  if (!file || !currentModalId) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      // Умное сжатие, чтобы не переполнить память браузера
-      const canvas = document.createElement('canvas');
-      const MAX_WIDTH = 800;
-      let scale = 1;
-      
-      if (img.width > MAX_WIDTH) {
-        scale = MAX_WIDTH / img.width;
-      }
-      
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      
-      // Конвертируем в сжатый формат JPEG (качество 80%)
-      const base64 = canvas.toDataURL('image/jpeg', 0.8);
-      
-      // Сохраняем
-      customImages[currentModalId] = base64;
-      try {
-        localStorage.setItem("recipe_custom_images", JSON.stringify(customImages));
-      } catch(err) {
-        alert("Ошибка: Фото слишком большое, браузер не может его сохранить.");
-        return;
-      }
-
-      // Обновляем картинку в модальном окне
-      document.getElementById("mImg").src = base64;
-      document.getElementById("resetImgBtn").style.display = "inline-block";
-      
-      // Обновляем карточку в сетке
-      renderGrid();
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function resetImage() {
-  if (!isAdmin) return alert("У вас нет прав на изменение фото!");
-  if (!currentModalId) return;
-  
-  delete customImages[currentModalId];
-  localStorage.setItem("recipe_custom_images", JSON.stringify(customImages));
-  
-  const r = recipes.find(x => x.id === currentModalId);
-  if (r) {
-    document.getElementById("mImg").src = r.img;
-    document.getElementById("resetImgBtn").style.display = "none";
-    renderGrid();
-  }
-}
-
-/* ---------- ИЗБРАННОЕ ---------- */
-const FAV_KEY = "recipe_favorites";
-let favorites = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
-
-function saveFavorites() { localStorage.setItem(FAV_KEY, JSON.stringify(favorites)); }
-function isFav(id) { return favorites.includes(id); }
-function toggleFav(id) {
-  if (isFav(id)) favorites = favorites.filter(x => x !== id);
-  else favorites.push(id);
-  saveFavorites();
-  renderGrid();
-  const mBtn = document.getElementById("mFavBtn");
-  if (mBtn.dataset.id == id) {
-    mBtn.textContent = isFav(id) ? "❤️" : "🤍";
-    mBtn.classList.toggle("active", isFav(id));
-  }
-}
-
-/* ---------- ФИЛЬТРЫ И ПОИСК ---------- */
-let currentFilter = "Все";
-let searchQuery = "";
-let ingredientQuery = "";
-
-const grid = document.getElementById("grid");
-const filtersEl = document.getElementById("filters");
-const searchInput = document.getElementById("searchInput");
-const ingredientInput = document.getElementById("ingredientInput");
-
-const categories = ["Все", ...new Set(recipes.map(r => r.category))];
-
-function renderFilters() {
-  const allBtns = categories.map(cat =>
-    `<button class="filter-btn ${cat === currentFilter ? "active" : ""}" data-cat="${cat}">${cat}</button>`
-  ).join("");
-  const favBtn = `<button class="filter-btn fav-filter ${currentFilter === "Избранное" ? "active" : ""}" data-cat="Избранное">❤️ Избранное (${favorites.length})</button>`;
-  filtersEl.innerHTML = allBtns + favBtn;
-
-  filtersEl.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.onclick = () => {
-      currentFilter = btn.dataset.cat;
-      renderFilters();
-      renderGrid();
-    };
-  });
-}
-
-/* ---------- СЕТКА И ПОИСК ---------- */
-function renderGrid() {
-  let filtered = recipes.filter(r => {
-    let matchCat = currentFilter === "Все" ? true :
-                   currentFilter === "Избранное" ? isFav(r.id) :
-                   r.category === currentFilter;
-    if (!matchCat) return false;
-
-    const q = searchQuery.toLowerCase().trim();
-    if (q && !r.title.toLowerCase().includes(q) && !r.desc.toLowerCase().includes(q)) return false;
-
-    return true;
-  });
-
-  if (ingredientQuery.trim() !== "") {
-    const searchTerms = ingredientQuery.toLowerCase().split(/[, ]+/).filter(t => t.length > 1);
-    
-    if (searchTerms.length > 0) {
-      filtered = filtered.map(r => {
-        let matchCount = 0;
-        const recipeIngs = r.ingredients.join(" ").toLowerCase();
-        
-        searchTerms.forEach(term => {
-          if (recipeIngs.includes(term)) matchCount++;
-        });
-        
-        return { ...r, matchCount: matchCount };
-      })
-      .filter(r => r.matchCount > 0)
-      .sort((a, b) => b.matchCount - a.matchCount);
-    }
-  }
-
-  if (filtered.length === 0) {
-    const msg = currentFilter === "Избранное" ? "В избранном пока пусто. Нажми на 🤍 на карточке, чтобы добавить." :
-                ingredientQuery ? "По вашим продуктам ничего не нашлось. Попробуйте ввести другие ингредиенты." :
-                "Ничего не найдено. Попробуйте другой запрос.";
-    grid.innerHTML = `<div class="empty"><span class="emoji">🍽️</span>${msg}</div>`;
-    return;
-  }
-
-  grid.innerHTML = filtered.map(r => {
-    const displayImg = getImgSrc(r.id, r.img);
-    return `
-    <div class="card" onclick="openModal(${r.id})">
-      <div class="card-image">
-        <img src="${displayImg}" alt="${r.title}" loading="lazy"
-             onerror="this.parentElement.innerHTML='<div style=&quot;display:flex;align-items:center;justify-content:center;height:100%;font-size:60px;&quot;>🍽️</div>'">
-        <button class="fav-btn ${isFav(r.id) ? "active" : ""}"
-                onclick="event.stopPropagation();toggleFav(${r.id})">
-          ${isFav(r.id) ? "❤️" : "🤍"}
-        </button>
-      </div>
-      <div class="card-body">
-        <div class="badge-row">
-          <span class="badge">${r.category}</span>
-          <span class="calories-badge">🔥 ${r.calories} ккал</span>
-          <span class="weight-badge">⚖️ ${r.weight}</span>
-        </div>
-        <div class="card-title">${r.title}</div>
-        <div class="card-desc">${r.desc}</div>
-        <div class="card-meta">
-          <span>⏱ ${r.time}</span>
-          <span>👥 ${r.servings} порц.</span>
-          <span>⭐ ${r.difficulty}</span>
-        </div>
-      </div>
-    </div>
-  `}).join("");
-}
-
-/* ---------- МОДАЛЬНОЕ ОКНО ---------- */
-let currentModalId = null;
-
-function openModal(id) {
-  const r = recipes.find(x => x.id === id);
-  if (!r) return;
-  currentModalId = id;
-  
-  const displayImg = getImgSrc(r.id, r.img);
-  document.getElementById("mImg").src = displayImg;
-  
-  document.getElementById("mTitle").textContent = r.title;
-  document.getElementById("mDesc").textContent = r.desc;
-  document.getElementById("mCat").textContent = r.category;
-  document.getElementById("mTime").textContent = r.time;
-  document.getElementById("mServ").textContent = r.servings;
-  document.getElementById("mWeight").textContent = r.weight;
-  document.getElementById("mDiff").textContent = r.difficulty;
-  document.getElementById("mCal").textContent = r.calories + " ккал / 100 г";
-  document.getElementById("mIngr").innerHTML = r.ingredients.map(i => `<li>${i}</li>`).join("");
-  document.getElementById("mSteps").innerHTML = r.steps.map(s => `<li>${s}</li>`).join("");
-
-  // Показываем/скрываем блок загрузки в зависимости от прав
-  document.getElementById("uploadRow").style.display = isAdmin ? "flex" : "none";
-  
-  // Показываем кнопку сброса, если есть кастомное фото
-  document.getElementById("resetImgBtn").style.display = customImages[r.id] ? "inline-block" : "none";
-  
-  // Сбрасываем input
-  document.getElementById("fileInput").value = "";
-
-  const mBtn = document.getElementById("mFavBtn");
-  mBtn.dataset.id = id;
-  mBtn.textContent = isFav(id) ? "❤️" : "🤍";
-  mBtn.classList.toggle("active", isFav(id));
-
-  document.getElementById("modal").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-
-function toggleFavFromModal() { if (currentModalId != null) toggleFav(currentModalId); }
-function closeModal() {
-  document.getElementById("modal").classList.remove("open");
-  document.body.style.overflow = "";
-  currentModalId = null;
-}
-
-document.getElementById("modal").addEventListener("click", e => {
-  if (e.target.id === "modal") closeModal();
-});
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeModal();
-});
-
-searchInput.addEventListener("input", e => {
-  searchQuery = e.target.value;
-  renderGrid();
-});
-
-ingredientInput.addEventListener("input", e => {
-  ingredientQuery = e.target.value;
-  renderGrid();
-});
-
-<script>
-/* =====================================================
-   ⚠️ ВАЖНО: ВСТАВЬТЕ СЮДА ВАШИ КЛЮЧИ ИЗ SUPABASE ⚠️
-   ===================================================== */
-const SUPABASE_URL = "https://ooweerxaqizvovadsecb.supabase.co";
+const SUPABASE_URL = "https://ooweerxaqizvovadsecb.supabase.co"; // Я убрал /rest/v1/ из конца ссылки
 const SUPABASE_ANON_KEY = "sb_publishable_8SvPI97piMkxAmoZ8vUbIQ_U7YoGp4w";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 /* ===================================================== */
 
-// Все фото из облака будут храниться здесь
 let customImages = {};
 
-// Функция для загрузки всех ссылок на фото из базы данных Supabase
 async function loadImagesFromCloud() {
-  const { data, error } = await supabase
-    .from('custom_images')
-    .select('*');
-
+  const { data, error } = await supabaseClient.from('custom_images').select('*');
   if (error) {
     console.error("Ошибка загрузки фото:", error);
     return;
   }
-
   customImages = {};
   if (data) {
     data.forEach(item => {
@@ -1015,16 +167,73 @@ async function loadImagesFromCloud() {
   renderGrid();
 }
 
-// Вызываем загрузку фото при старте
+// Запускаем загрузку фото при старте
 loadImagesFromCloud();
 
-/* ---------- БАЗА РЕЦЕПТОВ (оставь свой массив recipes) ---------- */
+/* ---------- БАЗА РЕЦЕПТОВ (30 штук) ---------- */
 const recipes = [
-  // ... (твой массив recipes, я не буду его дублировать, он у тебя уже есть) ...
+  { id: 1, title: "Паста Карбонара", img: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=800&q=80&auto=format&fit=crop", desc: "Классическая итальянская паста с беконом и яйцом", category: "Основное", time: "25 мин", servings: "2", difficulty: "Средне", calories: 380, weight: "450 г", ingredients: ["Спагетти — 200 г","Бекон — 150 г","Яйца — 2 шт","Пармезан — 50 г","Чеснок — 1 зубчик","Соль, перец"], steps: ["Отварите спагетти в подсоленной воде до готовности.","Обжарьте бекон на сковороде до хруста.","Взбейте яйца с тёртым пармезаном.","Смешайте горячую пасту с беконом, снимите с огня.","Добавьте яичную смесь, быстро перемешайте.","Подавайте, посыпав пармезаном и перцем."] },
+  { id: 2, title: "Греческий салат", img: "img/greek.jpg", desc: "Свежий салат с фетой, огурцом и маслинами", category: "Салаты", time: "15 мин", servings: "3", difficulty: "Легко", calories: 120, weight: "600 г", ingredients: ["Помидоры — 3 шт","Огурцы — 2 шт","Фета — 150 г","Маслины — 100 г","Красный лук — 1/2","Оливковое масло","Орегано"], steps: ["Нарежьте помидоры крупными кусками.","Нарежьте огурцы полукружьями.","Лук нарежьте тонкими полукольцами.","Смешайте овощи, добавьте маслины.","Сверху выложите кубики феты.","Заправьте маслом, посыпьте орегано."] },
+  { id: 3, title: "Борщ", img: "img/borsh.jpg", desc: "Насыщенный украинский суп со свёклой и мясом", category: "Супы", time: "1.5 ч", servings: "6", difficulty: "Средне", calories: 85, weight: "2.5 кг", ingredients: ["Говядина — 500 г","Свёкла — 2 шт","Капуста — 300 г","Картофель — 3 шт","Морковь — 1","Лук — 1","Томатная паста — 2 ст.л.","Сметана, чеснок"], steps: ["Сварите бульон из мяса (около 1 часа).","Добавьте нарезанный картофель.","Обжарьте лук, морковь и свёклу с томатной пастой.","Добавьте зажарку в бульон.","Положите нашинкованную капусту, варите 10 мин.","Дайте настояться, подавайте со сметаной."] },
+  { id: 4, title: "Блины", img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80&auto=format&fit=crop", desc: "Тонкие блины на молоке — к завтраку и не только", category: "Завтрак", time: "30 мин", servings: "4", difficulty: "Легко", calories: 230, weight: "700 г", ingredients: ["Мука — 200 г","Молоко — 500 мл","Яйца — 2 шт","Сахар — 2 ст.л.","Соль — щепотка","Растительное масло — 2 ст.л."], steps: ["Взбейте яйца с сахаром и солью.","Добавьте молоко, перемешайте.","Просейте муку, размешайте до однородности.","Добавьте масло, дайте тесту постоять 10 мин.","Жарьте на разогретой сковороде с двух сторон.","Подавайте с маслом, вареньем или сметаной."] },
+  { id: 5, title: "Шарлотка", img: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?w=800&q=80&auto=format&fit=crop", desc: "Простой яблочный пирог из доступных продуктов", category: "Десерт", time: "50 мин", servings: "6", difficulty: "Легко", calories: 260, weight: "1.2 кг", ingredients: ["Яйца — 4 шт","Сахар — 200 г","Мука — 200 г","Яблоки — 4 шт","Разрыхлитель — 1 ч.л.","Корица — по вкусу"], steps: ["Взбейте яйца с сахаром до пышной массы.","Просейте муку с разрыхлителем, аккуратно смешайте.","Нарежьте яблоки ломтиками.","Выложите яблоки в форму, посыпьте корицей.","Залейте тестом, разровняйте.","Выпекайте 35 мин при 180°C. Проверьте зубочисткой."] },
+  { id: 6, title: "Куриные котлеты", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80&auto=format&fit=crop", desc: "Сочные домашние котлеты из куриного фарша", category: "Основное", time: "40 мин", servings: "4", difficulty: "Легко", calories: 220, weight: "700 г", ingredients: ["Куриный фарш — 500 г","Лук — 1 шт","Яйцо — 1 шт","Хлеб — 2 ломтика","Молоко — 100 мл","Соль, перец","Панировочные сухари"], steps: ["Замочите хлеб в молоке.","Измельчите лук.","Смешайте фарш, лук, яйцо и отжатый хлеб.","Посолите, поперчите, перемешайте.","Сформируйте котлеты, обваляйте в сухарях.","Обжарьте с двух сторон до золотистой корочки."] },
+  { id: 7, title: "Овсяная каша", img: "img/ovsyanka.jpg", desc: "Полезный завтрак с ягодами и мёдом", category: "Завтрак", time: "10 мин", servings: "1", difficulty: "Легко", calories: 150, weight: "300 г", ingredients: ["Овсяные хлопья — 60 г","Молоко — 250 мл","Мёд — 1 ст.л.","Ягоды — по вкусу","Щепотка соли"], steps: ["Залейте хлопья молоком.","Доведите до кипения на медленном огне.","Варите 5–7 минут, помешивая.","Добавьте соль, снимите с огня.","Подавайте с мёдом и ягодами."] },
+  { id: 8, title: "Пицца Маргарита", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80&auto=format&fit=crop", desc: "Домашняя пицца с томатами и моцареллой", category: "Основное", time: "1 ч 20 мин", servings: "2", difficulty: "Средне", calories: 270, weight: "600 г", ingredients: ["Мука — 300 г","Вода — 180 мл","Дрожжи — 5 г","Сахар — 1 ч.л.","Моцарелла — 200 г","Томатный соус — 150 г","Базилик"], steps: ["Растворите дрожжи с сахаром в тёплой воде.","Замесите тесто с мукой, оставьте на 1 час.","Раскатайте тесто в круг.","Смажьте томатным соусом.","Выложите кусочки моцареллы.","Выпекайте 12–15 мин при 250°C. Посыпьте базиликом."] },
+  { id: 9, title: "Сырный суп", img: "https://images.pexels.com/photos/37593663/pexels-photo-37593663.jpeg?w=800&q=80&auto=format&fit=crop", desc: "Нежный крем-суп с плавленым сыром", category: "Супы", time: "35 мин", servings: "4", difficulty: "Легко", calories: 130, weight: "1.5 кг", ingredients: ["Куриный бульон — 1 л","Плавленый сыр — 200 г","Картофель — 2 шт","Морковь — 1","Лук — 1","Зелень","Соль, перец"], steps: ["Сварите бульон.","Добавьте нарезанный картофель, варите 15 мин.","Обжарьте лук и морковь.","Добавьте зажарку в суп.","Растворите плавленый сыр в супе.","Проварите 5 мин, добавьте зелень."] },
+  { id: 10, title: "Цезарь с курицей", img: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800&q=80&auto=format&fit=crop", desc: "Классический салат с курицей, сухариками и пармезаном", category: "Салаты", time: "30 мин", servings: "2", difficulty: "Средне", calories: 180, weight: "400 г", ingredients: ["Куриное филе — 300 г","Романо — 1 пучок","Пармезан — 50 г","Белый хлеб — 3 ломтика","Соус цезарь","Чеснок","Оливковое масло"], steps: ["Обжарьте куриное филе до готовности.","Нарежьте хлеб кубиками и подсушите.","Порвите салат руками.","Нарежьте курицу полосками.","Смешайте салат, курицу и сухарики.","Заправьте соусом, посыпьте пармезаном."] },
+  { id: 11, title: "Грибной крем-суп", img: "https://images.pexels.com/photos/2548840/pexels-photo-2548840.jpeg?w=800&q=80&auto=format&fit=crop", desc: "Бархатистый суп из шампиньонов со сливками", category: "Супы", time: "40 мин", servings: "4", difficulty: "Средне", calories: 140, weight: "1.4 кг", ingredients: ["Шампиньоны — 400 г","Лук — 1 шт","Сливки — 200 мл","Картофель — 2 шт","Масло — 30 г","Соль, перец","Зелень"], steps: ["Обжарьте лук на масле до прозрачности.","Добавьте нарезанные грибы, жарьте 10 мин.","Добавьте картофель и воду, варите 15 мин.","Пробейте суп блендером до однородности.","Влейте сливки, прогрейте.","Подавайте с зеленью и сухариками."] },
+  { id: 12, title: "Тирамису", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80&auto=format&fit=crop", desc: "Итальянский десерт с маскарпоне и кофе", category: "Десерт", time: "30 мин + охлаждение", servings: "6", difficulty: "Средне", calories: 320, weight: "900 г", ingredients: ["Маскарпоне — 500 г","Савоярди — 200 г","Яйца — 4 шт","Сахар — 100 г","Кофе — 200 мл","Какао — 2 ст.л."], steps: ["Сварите крепкий кофе, остудите.","Взбейте яйца с сахаром.","Добавьте маскарпоне, перемешайте.","Обмакните савоярди в кофе, выложите слоем.","Чередуйте слои печенья и крема.","Посыпьте какао, охладите 4 часа."] },
+  { id: 13, title: "Сырники", img: "img/syrniki.jpg", desc: "Нежные творожные сырники на завтрак", category: "Завтрак", time: "25 мин", servings: "3", difficulty: "Легко", calories: 210, weight: "500 г", ingredients: ["Творог — 400 г","Яйцо — 1 шт","Мука — 3 ст.л.","Сахар — 2 ст.л.","Ванилин — щепотка","Растительное масло"], steps: ["Разомните творог вилкой.","Добавьте яйцо, сахар и ванилин.","Всыпьте муку, замесите массу.","Сформируйте сырники, обваляйте в муке.","Обжарьте на среднем огне с двух сторон.","Подавайте со сметаной или вареньем."] },
+  { id: 14, title: "Оливье", img: "https://images.pexels.com/photos/35572936/pexels-photo-35572936.jpeg?w=800&q=80&auto=format&fit=crop", desc: "Классический праздничный салат", category: "Салаты", time: "40 мин", servings: "6", difficulty: "Легко", calories: 190, weight: "1.3 кг", ingredients: ["Картофель — 4 шт","Морковь — 2 шт","Яйца — 4 шт","Колбаса — 300 г","Огурцы солёные — 3 шт","Горошек — 1 банка","Майонез"], steps: ["Отварите картофель, морковь и яйца.","Остудите и нарежьте кубиками.","Нарежьте колбасу и огурцы.","Добавьте горошек.","Заправьте майонезом.","Посолите и перемешайте."] },
+  { id: 15, title: "Плов", img: "https://images.pexels.com/photos/14286683/pexels-photo-14286683.jpeg?w=800&q=80&auto=format&fit=crop", desc: "Узбекский плов с бараниной и морковью", category: "Основное", time: "1.5 ч", servings: "6", difficulty: "Сложно", calories: 300, weight: "2 кг", ingredients: ["Рис — 500 г","Баранина — 600 г","Морковь — 4 шт","Лук — 2 шт","Чеснок — 1 головка","Растительное масло","Зира, барбарис, соль"], steps: ["Обжарьте мясо до корочки в казане.","Добавьте лук, жарьте до золотистого.","Добавьте морковь соломкой.","Влейте воду, тушите 20 мин.","Выложите рис, добавьте специи и чеснок.","Варите под крышкой 20 мин, дайте постоять."] },
+  { id: 16, title: "Стейк из говядины", img: "https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=800&q=80&auto=format&fit=crop", desc: "Сочный стейк рибай с розмарином", category: "Основное", time: "20 мин", servings: "1", difficulty: "Средне", calories: 350, weight: "300 г", ingredients: ["Стейк рибай — 300 г","Сливочное масло — 30 г","Чеснок — 2 зубчика","Розмарин","Соль, перец","Оливковое масло"], steps: ["Достаньте стейк за 30 мин до готовки.","Посолите и поперчите с двух сторон.","Разогрейте сковороду до максимума.","Обжарьте по 2–3 мин с каждой стороны.","Добавьте масло, чеснок, розмарин, полейте стейк.","Дайте отдохнуть 5 мин перед подачей."] },
+  { id: 17, title: "Брускетта", img: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800&q=80&auto=format&fit=crop", desc: "Итальянская закуска с томатами на тостах", category: "Закуски", time: "15 мин", servings: "4", difficulty: "Легко", calories: 160, weight: "350 г", ingredients: ["Багет — 1 шт","Помидоры — 4 шт","Чеснок — 2 зубчика","Базилик","Оливковое масло","Соль, перец"], steps: ["Нарежьте багет ломтиками.","Подсушите в духовке или на гриле.","Натрите тосты чесноком.","Нарежьте помидоры кубиками.","Смешайте с базиликом, маслом, солью.","Выложите томаты на тосты."] },
+  { id: 18, title: "Ризотто с грибами", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800&q=80&auto=format&fit=crop", desc: "Кремовое итальянское ризотто с шампиньонами", category: "Основное", time: "35 мин", servings: "3", difficulty: "Средне", calories: 250, weight: "900 г", ingredients: ["Рис арборио — 300 г","Шампиньоны — 300 г","Лук — 1 шт","Бульон — 1 л","Пармезан — 50 г","Белое вино — 100 мл","Масло"], steps: ["Обжарьте лук и грибы на масле.","Добавьте рис, обжарьте 1 мин.","Влейте вино, дайте испариться.","Постепенно добавляйте горячий бульон, помешивая.","Готовьте 18–20 мин до кремовой текстуры.","Добавьте пармезан и масло, перемешайте."] },
+  { id: 19, title: "Шоколадный брауни", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80&auto=format&fit=crop", desc: "Влажный шоколадный брауни с орехами", category: "Десерт", time: "45 мин", servings: "8", difficulty: "Легко", calories: 400, weight: "800 г", ingredients: ["Тёмный шоколад — 200 г","Масло — 150 г","Яйца — 3 шт","Сахар — 200 г","Мука — 100 г","Грецкие орехи — 100 г","Какао — 2 ст.л."], steps: ["Растопите шоколад с маслом.","Взбейте яйца с сахаром.","Смешайте шоколадную массу с яйцами.","Добавьте муку и какао.","Вмешайте орехи, вылейте в форму.","Выпекайте 25 мин при 180°C."] },
+  { id: 20, title: "Лимонад домашний", img: "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800&q=80&auto=format&fit=crop", desc: "Освежающий лимонад с мятой и лимоном", category: "Напитки", time: "10 мин", servings: "4", difficulty: "Легко", calories: 45, weight: "1.2 л", ingredients: ["Лимоны — 3 шт","Сахар — 100 г","Вода — 1 л","Мята — пучок","Лёд — по вкусу"], steps: ["Вскипятите воду с сахаром, остудите.","Выжмите сок из лимонов.","Смешайте сок с сиропом.","Добавьте мяту и лёд.","Дайте настояться 10 мин.","Подавайте охлаждённым."] },
+  { id: 21, title: "Окрошка", img: "https://images.pexels.com/photos/5638247/pexels-photo-5638247.jpeg?w=800&q=80&auto=format&fit=crop", desc: "Освежающий летний холодный суп на квасе", category: "Супы", time: "30 мин", servings: "4", difficulty: "Легко", calories: 60, weight: "1.5 кг", ingredients: ["Квас — 1 л","Картофель — 3 шт","Яйца — 3 шт","Колбаса — 200 г","Огурцы — 2 шт","Редис — 5 шт","Зелень","Сметана"], steps: ["Отварите картофель и яйца, остудите.","Нарежьте картофель, яйца, колбасу и овощи мелкими кубиками.","Смешайте все ингредиенты в кастрюле.","Добавьте мелко нарезанную зелень и соль.","Залейте квасом и добавьте ложку сметаны перед подачей."] },
+  { id: 22, title: "Бефстроганов", img: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=800&q=80&auto=format&fit=crop", desc: "Нежная говядина в сливочно-грибном соусе", category: "Основное", time: "40 мин", servings: "4", difficulty: "Средне", calories: 220, weight: "800 г", ingredients: ["Говядина — 500 г","Шампиньоны — 200 г","Лук — 1 шт","Сливки — 200 мл","Мука — 1 ст.л.","Соль, перец","Масло"], steps: ["Нарежьте мясо тонкими брусочками, обжарьте на масле до румяной корочки.","Добавьте лук и грибы, жарьте 10 минут.","Посыпьте мукой, перемешайте.","Влейте сливки, посолите и поперчите.","Тушите 10-15 минут на медленном огне до загустения."] },
+  { id: 23, title: "Капрезе", img: "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=800&q=80&auto=format&fit=crop", desc: "Итальянская закуска из томатов, моцареллы и базилика", category: "Закуски", time: "10 мин", servings: "2", difficulty: "Легко", calories: 180, weight: "300 г", ingredients: ["Помидоры — 3 шт","Моцарелла — 200 г","Базилик — пучок","Оливковое масло","Бальзамический соус","Соль, перец"], steps: ["Нарежьте помидоры и моцареллу кружочками одинаковой толщины.","Выложите на тарелку, чередуя томат и сыр.","Добавьте листья базилика.","Полейте оливковым маслом и бальзамическим соусом.","Посолите и поперчите по вкусу."] },
+  { id: 24, title: "Картофельное пюре", img: "https://images.unsplash.com/photo-1600628421066-f6bda6a7b976?w=800&q=80&auto=format&fit=crop", desc: "Идеальный гарнир — нежное и сливочное пюре", category: "Основное", time: "30 мин", servings: "4", difficulty: "Легко", calories: 130, weight: "600 г", ingredients: ["Картофель — 700 г","Молоко — 150 мл","Сливочное масло — 50 г","Соль, перец","Зелень"], steps: ["Очистите картофель и отварите до мягкости в подсоленной воде.","Слейте воду, добавьте сливочное масло.","Разомните картофель толкушкой.","Влейте горячее молоко, продолжая помешивать.","Взбейте до однородности, добавьте зелень."] },
+  { id: 25, title: "Куриный бульон", img: "https://images.pexels.com/photos/539451/pexels-photo-539451.jpeg?w=800&q=80&auto=format&fit=crop", desc: "Прозрачный, наваристый бульон для восстановления сил", category: "Супы", time: "1.5 ч", servings: "4", difficulty: "Легко", calories: 50, weight: "2 л", ingredients: ["Куриная тушка — 1 шт","Морковь — 1 шт","Лук — 1 шт","Лавровый лист","Перец горошком","Соль","Вода — 2.5 л"], steps: ["Промойте курицу, залейте холодной водой и доведите до кипения.","Снимите пену, убавьте огонь.","Добавьте целую морковь, луковицу и специи.","Варите на медленном огне 1-1.5 часа.","Процедите бульон, мясо можно использовать отдельно."] },
+  { id: 26, title: "Гречка с грибами", img: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?w=800&q=80&auto=format&fit=crop", desc: "Сытное и полезное блюдо на каждый день", category: "Основное", time: "30 мин", servings: "3", difficulty: "Легко", calories: 160, weight: "700 г", ingredients: ["Гречка — 200 г","Шампиньоны — 300 г","Лук — 1 шт","Масло — 30 г","Соль, перец","Вода — 400 мл"], steps: ["Промойте гречку, залейте водой и варите до готовности.","Нарежьте лук и грибы.","Обжарьте лук на масле до золотистого цвета, добавьте грибы.","Жарьте грибы до испарения жидкости.","Смешайте готовую гречку с грибами, посолите и поперчите."] },
+  { id: 27, title: "Чесночные гренки", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=800&q=80&auto=format&fit=crop", desc: "Хрустящая закуска к супу или пиву", category: "Закуски", time: "15 мин", servings: "2", difficulty: "Легко", calories: 350, weight: "200 г", ingredients: ["Белый хлеб — 4 ломтика","Чеснок — 3 зубчика","Оливковое масло — 3 ст.л.","Соль","Зелень"], steps: ["Нарежьте хлеб брусочками.","Смешайте масло с выдавленным чесноком и солью.","Обмакните каждый кусочек хлеба в масло.","Выложите на противень и запекайте при 180°C 10 минут до хруста.","Посыпьте зеленью."] },
+  { id: 28, title: "Молочный коктейль", img: "https://images.pexels.com/photos/3727250/pexels-photo-3727250.jpeg?w=800&q=80&auto=format&fit=crop", desc: "Классический сладкий напиток с мороженым", category: "Напитки", time: "5 мин", servings: "2", difficulty: "Легко", calories: 90, weight: "500 мл", ingredients: ["Молоко — 300 мл","Мороженое — 150 г","Банан — 1 шт","Сироп — по вкусу"], steps: ["Нарежьте банан кусочками.","Поместите в блендер молоко, мороженое и банан.","Взбивайте на высокой скорости 1-2 минуты.","Разлейте по стаканам и подавайте сразу."] },
+  { id: 29, title: "Панкейки", img: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?w=800&q=80&auto=format&fit=crop", desc: "Пышные американские оладьи на кефире", category: "Завтрак", time: "20 мин", servings: "3", difficulty: "Легко", calories: 220, weight: "400 г", ingredients: ["Мука — 200 г","Кефир — 200 мл","Яйцо — 1 шт","Сахар — 1 ст.л.","Сода — 0.5 ч.л.","Масло для жарки"], steps: ["Смешайте кефир с содой, оставьте на 5 минут.","Взбейте яйцо с сахаром, добавьте кефир.","Всыпьте муку, замесите густое тесто.","Жарьте на разогретой сковороде с небольшим количеством масла.","Жарьте с двух сторон до золотистого цвета."] },
+  { id: 30, title: "Ленивая овсянка", img: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=800&q=80&auto=format&fit=crop", desc: "Завтрак, который готовится вечером (овсянка в банке)", category: "Завтрак", time: "5 мин + ночь", servings: "1", difficulty: "Легко", calories: 180, weight: "250 г", ingredients: ["Овсяные хлопья — 40 г","Молоко или йогурт — 100 мл","Семена чиа — 1 ч.л.","Фрукты/ягоды","Мёд"], steps: ["Смешайте хлопья, семена чиа и молоко в банке.","Добавьте ложку мёда и перемешайте.","Закройте крышкой и уберите в холодильник на ночь.","Утром добавьте свежие фрукты или ягоды."] }
 ];
 
-/* ---------- РЕЖИМ АДМИНИСТРАТОРА (без изменений) ---------- */
-// ... (код toggleAdminMode, updateAdminUI, isAdmin, ADMIN_PASSWORD оставь как было) ...
+/* ---------- РЕЖИМ АДМИНИСТРАТОРА ---------- */
+const ADMIN_PASSWORD = "mikerecept6752";
+let isAdmin = sessionStorage.getItem("recipe_isAdmin") === "true";
+
+function toggleAdminMode() {
+  if (isAdmin) {
+    isAdmin = false; 
+    sessionStorage.setItem("recipe_isAdmin", "false"); 
+    updateAdminUI(); 
+    closeModal();
+  } else {
+    const pass = prompt("Введите пароль:");
+    if (pass === ADMIN_PASSWORD) {
+      isAdmin = true; 
+      sessionStorage.setItem("recipe_isAdmin", "true"); 
+      updateAdminUI();
+      alert("✅ Доступ разрешен! Теперь вы можете менять фото.");
+    } else if (pass !== null) { 
+      alert("❌ Неверный пароль!"); 
+    }
+  }
+}
+
+function updateAdminUI() {
+  const btn = document.getElementById("adminBtn");
+  btn.textContent = isAdmin ? "🔓 Выйти из админа" : "🔒 Войти как админ";
+  btn.classList.toggle("active", isAdmin);
+  const uploadRow = document.getElementById("uploadRow");
+  if (uploadRow) uploadRow.style.display = isAdmin ? "flex" : "none";
+}
 
 /* ---------- ЗАГРУЗКА В ОБЛАКО (Supabase) ---------- */
 async function handleImageUpload(event) {
@@ -1034,11 +243,11 @@ async function handleImageUpload(event) {
 
   document.getElementById("loading-overlay").style.display = "flex";
 
-  // 1. Сжимаем фото (как в прошлом коде)
   const reader = new FileReader();
   reader.onload = async function(e) {
     const img = new Image();
     img.onload = async function() {
+      // Сжимаем фото перед отправкой
       const canvas = document.createElement('canvas');
       const MAX_WIDTH = 800;
       let scale = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1;
@@ -1048,37 +257,32 @@ async function handleImageUpload(event) {
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       
       const base64 = canvas.toDataURL('image/jpeg', 0.8);
-      
-      // Преобразуем base64 в blob для загрузки
       const response = await fetch(base64);
       const blob = await response.blob();
 
-      // 2. Загружаем файл в Supabase Storage
+      // 1. Загружаем файл в хранилище Supabase (Bucket "recipes")
       const fileName = `recipe_${currentModalId}_${Date.now()}.jpg`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabaseClient.storage
         .from('recipes')
         .upload(fileName, blob);
 
       if (uploadError) {
         document.getElementById("loading-overlay").style.display = "none";
-        alert("Ошибка загрузки в хранилище: " + uploadError.message);
+        alert("Ошибка загрузки: " + uploadError.message);
         return;
       }
 
-      // 3. Получаем публичную ссылку на фото
-      const { data: urlData } = supabase.storage
+      // 2. Получаем публичную ссылку на фото
+      const { data: urlData } = supabaseClient.storage
         .from('recipes')
         .getPublicUrl(fileName);
 
       const publicUrl = urlData.publicUrl;
 
-      // 4. Сохраняем ссылку в базу данных (таблица custom_images)
-      const { error: dbError } = await supabase
+      // 3. Сохраняем ссылку в базу данных
+      const { error: dbError } = await supabaseClient
         .from('custom_images')
-        .upsert({ 
-          recipe_id: currentModalId, 
-          image_url: publicUrl 
-        }, { onConflict: 'recipe_id' }); // Если запись есть, обновляем её
+        .upsert({ recipe_id: currentModalId, image_url: publicUrl }, { onConflict: 'recipe_id' });
 
       document.getElementById("loading-overlay").style.display = "none";
 
@@ -1087,9 +291,8 @@ async function handleImageUpload(event) {
         return;
       }
 
-      alert("✅ Фото успешно обновлено в облаке!");
-      // Перезагружаем фото из облака
-      loadImagesFromCloud();
+      alert("✅ Фото успешно обновлено во всем облаке!");
+      loadImagesFromCloud(); // Перезагружаем фото
     };
     img.src = e.target.result;
   };
@@ -1104,31 +307,134 @@ async function resetImage() {
 
   document.getElementById("loading-overlay").style.display = "flex";
 
-  // 1. Удаляем запись из базы данных
-  const { error: dbError } = await supabase
+  // Удаляем запись из базы данных
+  const { error: dbError } = await supabaseClient
     .from('custom_images')
     .delete()
     .eq('recipe_id', currentModalId);
 
   if (dbError) {
     document.getElementById("loading-overlay").style.display = "none";
-    alert("Ошибка удаления из базы: " + dbError.message);
+    alert("Ошибка удаления: " + dbError.message);
     return;
   }
 
-  // 2. (Опционально) Можно удалить и сам файл из хранилища, но для простоты просто обновляем список
   document.getElementById("loading-overlay").style.display = "none";
   alert("✅ Фото сброшено!");
-  loadImagesFromCloud(); // Перезагружаем данные
+  loadImagesFromCloud();
 }
 
-/* ---------- ОСТАЛЬНОЙ КОД (Избранное, Рендер, Модальное окно) ---------- */
-// ... (код toggleFav, renderFilters, renderGrid, openModal, closeModal оставь без изменений) ...
+/* ---------- ИЗБРАННОЕ И РЕНДЕР ---------- */
+const FAV_KEY = "recipe_favorites";
+let favorites = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
+function isFav(id) { return favorites.includes(id); }
+function toggleFav(id) {
+  if (isFav(id)) favorites = favorites.filter(x => x !== id);
+  else favorites.push(id);
+  localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
+  renderGrid();
+  const mBtn = document.getElementById("mFavBtn");
+  if (mBtn.dataset.id == id) {
+    mBtn.textContent = isFav(id) ? "❤️" : "🤍";
+  }
+}
 
-// В функции renderGrid и openModal замени `customImages[r.id]` на `customImages[r.id]`
-// (оно уже так и есть, менять ничего не нужно, просто убедись, что customImages берется из загруженных данных)
+let currentFilter = "Все", searchQuery = "", ingredientQuery = "";
+const grid = document.getElementById("grid");
+const categories = ["Все", ...new Set(recipes.map(r => r.category))];
 
-// Инициализация
+function renderFilters() {
+  const allBtns = categories.map(cat => `<button class="filter-btn ${cat === currentFilter ? "active" : ""}" data-cat="${cat}">${cat}</button>`).join("");
+  const favBtn = `<button class="filter-btn fav-filter ${currentFilter === "Избранное" ? "active" : ""}" data-cat="Избранное">❤️ Избранное (${favorites.length})</button>`;
+  document.getElementById("filters").innerHTML = allBtns + favBtn;
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.onclick = () => { currentFilter = btn.dataset.cat; renderFilters(); renderGrid(); };
+  });
+}
+
+function renderGrid() {
+  let filtered = recipes.filter(r => {
+    let matchCat = currentFilter === "Все" ? true : currentFilter === "Избранное" ? isFav(r.id) : r.category === currentFilter;
+    if (!matchCat) return false;
+    const q = searchQuery.toLowerCase().trim();
+    if (q && !r.title.toLowerCase().includes(q) && !r.desc.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (ingredientQuery.trim() !== "") {
+    const terms = ingredientQuery.toLowerCase().split(/[, ]+/).filter(t => t.length > 1);
+    if (terms.length > 0) {
+      filtered = filtered.map(r => {
+        let match = 0;
+        const ings = r.ingredients.join(" ").toLowerCase();
+        terms.forEach(t => { if (ings.includes(t)) match++; });
+        return { ...r, match };
+      }).filter(r => r.match > 0).sort((a, b) => b.match - a.match);
+    }
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="text-align:center; grid-column:1/-1; padding:40px;">Ничего не найдено 🍽️</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(r => {
+    const displayImg = customImages[r.id] || r.img;
+    return `
+    <div class="card" onclick="openModal(${r.id})">
+      <div class="card-image">
+        <img src="${displayImg}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'">
+        <button class="fav-btn ${isFav(r.id) ? "active" : ""}" onclick="event.stopPropagation();toggleFav(${r.id})">${isFav(r.id) ? "❤️" : "🤍"}</button>
+      </div>
+      <div class="card-body">
+        <div class="badge-row"><span class="badge">${r.category}</span><span class="calories-badge">🔥 ${r.calories} ккал</span><span class="weight-badge">⚖️ ${r.weight}</span></div>
+        <div class="card-title">${r.title}</div>
+        <div class="card-desc">${r.desc}</div>
+        <div class="card-meta"><span>⏱ ${r.time}</span><span>👥 ${r.servings} порц.</span><span>⭐ ${r.difficulty}</span></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- МОДАЛЬНОЕ ОКНО ---------- */
+let currentModalId = null;
+function openModal(id) {
+  const r = recipes.find(x => x.id === id);
+  if (!r) return;
+  currentModalId = id;
+  const displayImg = customImages[r.id] || r.img;
+  
+  document.getElementById("mImg").src = displayImg;
+  document.getElementById("mTitle").textContent = r.title;
+  document.getElementById("mDesc").textContent = r.desc;
+  document.getElementById("mCat").textContent = r.category;
+  document.getElementById("mTime").textContent = r.time;
+  document.getElementById("mServ").textContent = r.servings;
+  document.getElementById("mWeight").textContent = r.weight;
+  document.getElementById("mDiff").textContent = r.difficulty;
+  document.getElementById("mCal").textContent = r.calories + " ккал / 100 г";
+  document.getElementById("mIngr").innerHTML = r.ingredients.map(i => `<li>${i}</li>`).join("");
+  document.getElementById("mSteps").innerHTML = r.steps.map(s => `<li>${s}</li>`).join("");
+
+  document.getElementById("uploadRow").style.display = isAdmin ? "flex" : "none";
+  document.getElementById("resetImgBtn").style.display = customImages[r.id] ? "inline-block" : "none";
+  document.getElementById("fileInput").value = "";
+
+  const mBtn = document.getElementById("mFavBtn");
+  mBtn.dataset.id = id;
+  mBtn.textContent = isFav(id) ? "❤️" : "🤍";
+
+  document.getElementById("modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function toggleFavFromModal() { if (currentModalId) toggleFav(currentModalId); }
+function closeModal() { document.getElementById("modal").classList.remove("open"); document.body.style.overflow = ""; currentModalId = null; }
+document.getElementById("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+
+document.getElementById("searchInput").addEventListener("input", e => { searchQuery = e.target.value; renderGrid(); });
+document.getElementById("ingredientInput").addEventListener("input", e => { ingredientQuery = e.target.value; renderGrid(); });
+
 updateAdminUI();
 renderFilters();
 renderGrid();
