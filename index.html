@@ -232,6 +232,25 @@
   .cook-nav button { padding: 20px 40px; font-size: 22px; border-radius: 20px; font-weight: 800; flex: 1; max-width: 250px; }
   .cook-progress { font-size: 20px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 10px 25px; border-radius: 30px; display: inline-block; }
 
+  .serv-ctl{display:inline-flex;align-items:center;gap:8px;margin-left:10px;font-size:13px;font-weight:600;color:var(--muted)}
+  .serv-ctl button{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-weight:800}
+  .serv-ctl button:hover{border-color:var(--primary);color:var(--primary)}
+  .serv-ctl b{min-width:20px;text-align:center;color:var(--text);font-size:16px}
+  .ingr-item .ing-name{flex:1}
+  .ing-amt{color:var(--primary);font-weight:700;white-space:nowrap;margin:0 12px}
+  .cart-recipes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:15px}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--primary-light);color:var(--primary);border-radius:20px;font-size:13px;font-weight:700}
+  .chip button{border:none;background:none;color:inherit;cursor:pointer;font-weight:800}
+  .cart-item label{display:flex;gap:10px;align-items:center;flex:1;cursor:pointer}
+  .cart-item.done .ing-name{text-decoration:line-through;opacity:.45}
+  .cart-item small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+  .cart-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  .cart-actions button{flex:1;min-width:110px;padding:10px 14px}
+  .rand-btn{padding:8px 16px;border:1px dashed var(--primary);background:var(--card);color:var(--primary);border-radius:20px;cursor:pointer;font-size:13px;font-weight:700}
+  .rand-btn:hover{background:var(--primary);color:#fff}
+  .timer-display{font-size:56px;font-weight:800;color:var(--primary)}
+  #cookTimerBox{min-height:70px;display:flex;flex-direction:column;align-items:center;gap:10px}
+
   /* ---------- АДАПТИВ ПОД ТЕЛЕФОНЫ ---------- */
   @media (max-width: 768px) {
     .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 10px; }
@@ -253,6 +272,107 @@
     .cook-nav button { max-width: 100%; }
     .user-id-badge { display: none; }
   }
+
+  /* ===== НЕОБРУТАЛИЗМ ===== */
+  :root{--bg:#fff4d6;--card:#fff;--text:#111;--muted:#555;--primary:#ff4d6d;--primary-hover:#ff4d6d;--primary-light:#ffd9e0;--secondary:#3ddc97;--border:#111;--shadow:6px 6px 0 #111;--shadow-h:10px 10px 0 #111;--glass:#fff4d6;--badge-bg:#ffd23f;--badge-text:#111;--y:#ffd23f}
+  [data-theme="dark"]{--bg:#17141f;--card:#221e2e;--text:#f7f3ea;--muted:#b9b2c9;--primary:#ff5d7e;--primary-hover:#ff5d7e;--primary-light:#3a2030;--border:#f7f3ea;--shadow:6px 6px 0 #ff5d7e;--shadow-h:10px 10px 0 #ff5d7e;--glass:#17141f}
+  body{background-color:var(--bg);background-image:radial-gradient(rgba(0,0,0,.13) 1.3px,transparent 1.6px);background-size:22px 22px}
+  [data-theme="dark"] body{background-image:radial-gradient(rgba(255,255,255,.09) 1.3px,transparent 1.6px)}
+  header{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom:3px solid var(--border);box-shadow:none}
+  .logo{background:var(--y);color:#111;border:3px solid #111;box-shadow:3px 3px 0 #111;padding:2px 12px;text-transform:uppercase;font-weight:800;letter-spacing:-1px;transform:rotate(-2deg)}
+  .icon-btn{border:3px solid var(--border);border-radius:12px;box-shadow:3px 3px 0 var(--border);position:relative}
+  .icon-btn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--border);color:var(--text);border-color:var(--border)}
+  .admin-btn.active{background:var(--primary);color:#fff}
+  .user-id-badge{background:#3ddc97;color:#111;border:3px solid #111;border-radius:12px}
+  .hero{max-width:1400px;margin:28px auto 0;padding:0 20px}
+  .hero-inner{background:var(--y);color:#111;border:3px solid #111;border-radius:20px;box-shadow:10px 10px 0 #111;padding:44px;position:relative;overflow:hidden}
+  .hero-inner::after{content:"🍳";position:absolute;right:28px;top:50%;transform:translateY(-50%) rotate(12deg);font-size:170px;line-height:1}
+  .hero-kicker{display:inline-block;background:#111;color:#fff;padding:4px 12px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+  .hero h1{font-size:clamp(34px,6vw,72px);font-weight:800;text-transform:uppercase;line-height:1;letter-spacing:-2px;margin:14px 0}
+  .hero p{font-weight:600;margin-bottom:22px;max-width:520px}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;position:relative;z-index:1}
+  .hero .btn-primary{background:#111;color:#fff;border-color:#111;box-shadow:4px 4px 0 var(--primary)}
+  .hero .btn-secondary{background:#fff;color:#111;border-color:#111;box-shadow:4px 4px 0 #111}
+  .search-box input{border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);font-weight:700;padding:17px 20px 17px 52px}
+  .search-box input:focus{border-color:var(--border);transform:translate(-2px,-2px);box-shadow:var(--shadow-h)}
+  .filter-btn,.rand-btn{border:3px solid var(--border);border-radius:10px;box-shadow:3px 3px 0 var(--border);background:var(--card);color:var(--text);font-weight:800;text-transform:uppercase;font-size:12px;padding:8px 14px}
+  .filter-btn:hover,.rand-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--border);color:var(--text);border-color:var(--border);background:var(--card)}
+  .filter-btn.active{background:var(--primary);color:#fff;border-color:var(--border)}
+  .rand-btn{background:var(--y);color:#111;border-style:solid}
+  .sort-select{border:3px solid var(--border);border-radius:10px;font-weight:800;box-shadow:3px 3px 0 var(--border)}
+  .grid{gap:28px;padding:0 24px 0 20px}
+  .card{border:3px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}
+  .card:hover{transform:translate(-4px,-4px);box-shadow:var(--shadow-h)}
+  html[data-theme="light"] .card:nth-child(4n+1){background:#ffe3ea}
+  html[data-theme="light"] .card:nth-child(4n+2){background:#fff0a8}
+  html[data-theme="light"] .card:nth-child(4n+3){background:#d5f8e8}
+  html[data-theme="light"] .card:nth-child(4n){background:#d7f1fb}
+  .card-image{height:190px;border-bottom:3px solid var(--border)}
+  .card-title{font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:-.3px}
+  .badge{border:2px solid #111;border-radius:8px;background:var(--y);color:#111}
+  .badge.cal{background:var(--primary);color:#fff}
+  .macros-row{border-top:2px solid var(--border);font-weight:700}
+  .fav-btn{border:3px solid #111;background:#fff;box-shadow:2px 2px 0 #111}
+  .modal-overlay{background:rgba(17,17,17,.72);backdrop-filter:none}
+  .modal{border:3px solid var(--border);border-radius:20px;box-shadow:12px 12px 0 var(--primary)}
+  .modal-hero{border-bottom:3px solid var(--border)}
+  .modal-close,.modal-fav{border:3px solid #111;background:#fff;box-shadow:3px 3px 0 #111;color:#111;border-radius:12px}
+  .modal-header h2{font-size:34px;font-weight:800;text-transform:uppercase;letter-spacing:-1px;line-height:1.05}
+  .stat-box{border:3px solid #111;border-radius:12px;box-shadow:3px 3px 0 #111;color:#111}
+  .stat-box:nth-child(1){background:#ffd23f}.stat-box:nth-child(2){background:#3ddc97}.stat-box:nth-child(3){background:#4cc9f0}.stat-box:nth-child(4){background:#ff9eb5}
+  .stat-label,.stat-value{color:#111}
+  .modal-body h3{text-transform:uppercase;font-weight:800;letter-spacing:-.3px}
+  .ingr-item,.step-item{border:3px solid var(--border);border-radius:12px;background:var(--card)}
+  .step-item::before{background:var(--y);color:#111;border:3px solid #111;border-radius:8px}
+  .equip-item{background:var(--y);color:#111;border:2px solid #111;border-radius:8px;box-shadow:2px 2px 0 #111}
+  .btn-primary,.btn-secondary{border:3px solid var(--border);border-radius:12px;font-weight:800;text-transform:uppercase;font-size:13px;box-shadow:4px 4px 0 var(--border)}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-secondary{background:var(--card);color:var(--text)}
+  .btn-primary:hover,.btn-secondary:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--border);background:var(--primary);color:#fff;border-color:var(--border)}
+  .btn-secondary:hover{background:var(--y);color:#111}
+  .btn-primary:active,.btn-secondary:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--border)}
+  .hero .btn-primary:hover{background:#111}
+  .fab{background:var(--y);color:#111;border:3px solid #111;border-radius:18px;box-shadow:5px 5px 0 #111}
+  .fab:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 #111}
+  .fab-badge{background:var(--primary);color:#fff;border:3px solid #111;border-radius:8px}
+  .toast{background:var(--y);color:#111;border:3px solid #111;border-radius:12px;box-shadow:5px 5px 0 #111}
+  .toast.error{background:#ff9eb5}
+  .chip{background:var(--y);color:#111;border:2px solid #111;border-radius:8px}
+  .serv-ctl button{border:3px solid var(--border);border-radius:8px;background:var(--card)}
+  .rating-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:0 40px 6px}
+  .stars{display:flex;gap:2px}
+  .star{background:none;border:none;font-size:32px;line-height:1;cursor:pointer;color:#ddd;-webkit-text-stroke:1.5px #111;transition:transform .15s}
+  .star:hover{transform:scale(1.2) rotate(-8deg)}.star.on{color:#ffd23f}
+  .share-btn{padding:8px 14px}
+  #cooking-mode{background:var(--y);color:#111}
+  #cookTitle{color:#111!important;text-transform:uppercase;font-weight:800}
+  .cook-progress{background:#111;color:#fff;border-radius:8px}
+  .timer-display{color:#111}
+  /* чат */
+  .chat-me{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:14px;font-weight:600}
+  .chat-me b{background:var(--y);color:#111;border:2px solid #111;border-radius:8px;padding:2px 8px}
+  .chat-me .btn-secondary,.chat-head .btn-secondary{padding:6px 12px;font-size:12px}
+  .chat-new,.chat-send,.chat-head{display:flex;gap:8px;align-items:center}
+  .chat-new{margin-bottom:14px}
+  .chat-new input,.chat-send input,.chat-send select{flex:1;min-width:0;padding:12px 14px;border:3px solid var(--border);border-radius:12px;background:var(--card);color:var(--text);font-weight:600;outline:none}
+  .chat-send select{flex:0 1 120px}
+  .chat-msgs{height:min(380px,50vh);overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:12px;border:3px solid var(--border);border-radius:12px;margin:12px 0;background:var(--bg)}
+  .msg{max-width:80%;padding:8px 12px;border:3px solid var(--border);border-radius:12px;font-size:14px;word-wrap:break-word;color:var(--text)}
+  .msg.me{align-self:flex-end;background:var(--y);color:#111;border-color:#111}
+  .msg.them{align-self:flex-start;background:var(--card)}
+  .msg time{display:block;font-size:10px;opacity:.6;margin-top:2px}
+  .recipe-link{display:inline-block;margin-top:6px;cursor:pointer;font-weight:800;text-decoration:underline}
+  .conv-item{cursor:pointer}
+  .unread{background:var(--primary);color:#fff;border:2px solid #111;border-radius:8px;padding:0 8px;font-size:12px;font-weight:800}
+  @media (max-width:768px){
+    .hero{padding:0 12px}.hero-inner{padding:28px 20px;box-shadow:6px 6px 0 #111}.hero-inner::after{font-size:90px;top:auto;bottom:-6px;transform:rotate(12deg);opacity:.9}
+    .filters{flex-wrap:nowrap;overflow-x:auto;padding:0 4px 8px 0;scrollbar-width:none}
+    .filter-btn,.rand-btn{white-space:nowrap;flex-shrink:0}
+    .grid{gap:14px;padding:0 14px 0 10px}.card-image{height:125px}.card-title{font-size:13px}
+    .modal-overlay{align-items:flex-end;padding:0}
+    .modal{border-radius:20px 20px 0 0;max-height:94vh;box-shadow:none}
+    .modal-header h2{font-size:24px}.rating-row{padding:0 20px}
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -264,10 +384,21 @@
   <div class="logo">🍳 RecipeBook</div>
   <div class="header-controls">
     <div class="user-id-badge" id="userIdDisplay" title="Ваш уникальный ID на этом устройстве">👤 ...</div>
+    <button class="icon-btn" id="chatBtn" onclick="openChat()" title="Чат между пользователями" aria-label="Чат">💬<span class="fab-badge" id="chatBadge" style="display:none;width:22px;height:22px;font-size:11px;top:-8px;right:-8px;">0</span></button>
     <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Переключить тему">🌙</button>
     <button class="icon-btn admin-btn" id="adminBtn" onclick="toggleAdminMode()" title="Режим администратора">🔒</button>
   </div>
 </header>
+
+<section class="hero"><div class="hero-inner">
+  <span class="hero-kicker">Книга рецептов</span>
+  <h1>Что приготовим сегодня?</h1>
+  <p id="heroStats"></p>
+  <div class="hero-actions">
+    <button class="btn-primary" id="dayBtn" onclick="openDayRecipe()">✨ Рецепт дня</button>
+    <button class="btn-secondary" onclick="openRandom()">🎲 Удиви меня</button>
+  </div>
+</div></section>
 
 <div class="toolbar">
   <div class="search-row">
@@ -280,6 +411,7 @@
       <option value="default">По умолчанию</option>
       <option value="time">Быстрые ⏱</option>
       <option value="calories">Низкокалорийные 🔥</option>
+      <option value="rating">Мои оценки ⭐</option>
       <option value="title">По алфавиту 🔤</option>
     </select>
   </div>
@@ -287,20 +419,24 @@
 
 <div class="grid" id="grid"></div>
 
-<button class="fab" onclick="openShoppingList()">
+<button class="fab" onclick="openShoppingList()" aria-label="Список покупок">
   🛒 <span class="fab-badge" id="shopBadge" style="display:none;">0</span>
 </button>
 
-<div class="modal-overlay" id="modal">
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="modal">
     <div class="modal-hero">
       <img id="mImg" src="" alt="">
       <button class="modal-fav" id="mFavBtn" onclick="toggleFavFromModal()">🤍</button>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">✕</button>
     </div>
     <div class="modal-header">
       <h2 id="mTitle"></h2>
       <p id="mDesc"></p>
+    </div>
+    <div class="rating-row">
+      <div class="stars" id="mRating" role="group" aria-label="Ваша оценка"></div>
+      <button class="btn-secondary share-btn" onclick="shareRecipe()">📤 Поделиться</button>
     </div>
     <div class="modal-body">
       <div class="upload-row" id="uploadRow" style="display: none;">
@@ -317,10 +453,11 @@
       </div>
 
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <h3>🧾 Ингредиенты <span style="font-size:13px; font-weight:600; color:var(--muted);" id="mServings"></span></h3>
+        <h3>🧾 Ингредиенты <span class="serv-ctl"><button onclick="changeServings(-1)" aria-label="Меньше порций">−</button><b id="mServNum">2</b>порц.<button onclick="changeServings(1)" aria-label="Больше порций">+</button></span></h3>
         <button class="btn-primary" onclick="startCooking()">👨‍🍳 Начать готовку</button>
       </div>
       <ul class="ingr-list" id="mIngr"></ul>
+      <button class="btn-secondary" style="width:100%;margin-top:12px" onclick="addRecipeToCart()">🛒 Добавить все ингредиенты в корзину</button>
 
       <h3>🍳 Инструменты и посуда</h3>
       <ul class="equip-grid" id="mEquip"></ul>
@@ -331,15 +468,41 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="shopModal">
+<div class="modal-overlay" id="shopModal" role="dialog" aria-modal="true" aria-label="Список покупок">
   <div class="modal" style="max-width: 500px;">
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
       <h2>🛒 Список покупок</h2>
       <button class="modal-close" style="position:static;" onclick="document.getElementById('shopModal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
+      <div class="cart-recipes" id="cartRecipes"></div>
       <ul class="ingr-list" id="shopList"></ul>
-      <button class="btn-secondary" style="width:100%; margin-top:20px;" onclick="clearShoppingList()">Очистить</button>
+      <div class="cart-actions">
+        <button class="btn-secondary" onclick="copyCart()">📋 Копировать</button>
+        <button class="btn-secondary" onclick="clearBought()">✔ Убрать купленное</button>
+        <button class="btn-secondary" onclick="clearShoppingList()">🗑 Очистить всё</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="chatModal" role="dialog" aria-modal="true" aria-label="Чат">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+      <h2>💬 Чат</h2>
+      <button class="modal-close" style="position:static;flex-shrink:0;" onclick="closeChat()" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="chat-me">Ваш ID: <b id="chatMyId"></b> <button class="btn-secondary" onclick="copyMyId()">Копировать</button></div>
+      <div id="chatList">
+        <div class="chat-new"><input id="chatPeerInput" placeholder="ID друга, напр. user_k2j4h5g1"><button class="btn-primary" onclick="startChat()">Написать</button></div>
+        <ul class="ingr-list" id="chatConvs"></ul>
+      </div>
+      <div id="chatThread" style="display:none;">
+        <div class="chat-head"><button class="btn-secondary" onclick="backToList()">← Назад</button><b id="chatPeerName"></b></div>
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-send"><select id="chatRecipe" aria-label="Прикрепить рецепт"></select><input id="chatInput" maxlength="1000" placeholder="Сообщение..."><button class="btn-primary" onclick="sendChat()" aria-label="Отправить">➤</button></div>
+      </div>
     </div>
   </div>
 </div>
@@ -349,6 +512,7 @@
     <h2 id="cookTitle" style="color:var(--primary); font-size: 24px;">Название блюда</h2>
     <div class="cook-progress" id="cookProgress">Шаг 1 из 5</div>
     <div class="cook-step-text" id="cookText">Текст шага...</div>
+    <div id="cookTimerBox"></div>
     <div class="cook-nav">
       <button class="btn-secondary" onclick="prevStep()">← Назад</button>
       <button class="btn-primary" onclick="nextStep()">Далее →</button>
@@ -373,13 +537,29 @@ document.getElementById('userIdDisplay').textContent = '👤 ' + userId;
    ===================================================== */
 const SUPABASE_URL = "https://ooweerxaqizvovadsecb.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_8SvPI97piMkxAmoZ8vUbIQ_U7YoGp4w";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = (window.supabase && window.supabase.createClient)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null; // без облака сайт работает со стандартными фото
+
+const FALLBACK_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#eee"/><text x="50%" y="50%" font-size="64" text-anchor="middle" dominant-baseline="middle">🍽️</text></svg>');
+
+function esc(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function debounce(fn, ms = 200) {
+  let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
 
 let customImages = {};
+let ratings = JSON.parse(localStorage.getItem('recipe_ratings') || '{}');
 let currentModalId = null;
 
 async function loadImagesFromCloud() {
-  const { data, error } = await supabaseClient.from('custom_images').select('*');
+  if (!supabaseClient) return;
+  let data, error;
+  try { ({ data, error } = await supabaseClient.from('custom_images').select('*')); }
+  catch (e) { return console.error(e); }
   if (error) return console.error(error);
   customImages = {};
   if (data) data.forEach(item => { customImages[item.recipe_id] = item.image_url; });
@@ -452,7 +632,7 @@ const recipes = [
   { id: 16, title: "Стейк", img: "https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=800", desc: "Рибай с розмарином", category: "Основное", time: "20 мин", servings: "1", difficulty: "Средне", calories: 350, weight: "300 г", protein: 25, fat: 22, carbs: 0,
     ingredients: ["Стейк рибай толщиной 3–4 см — 300 г","Сливочное масло — 30 г","Чеснок — 3 зубчика","Розмарин — 2 веточки","Оливковое масло — 1 ст. л.","Крупная морская соль — 1 ч. л.","Чёрный перец — по вкусу"],
     equipment: ["Чугунная сковорода","Щипцы","Пищевой термометр","Ложка для поливания","Бумажные полотенца","Разделочная доска","Фольга"],
-    steps: ["Достаньте мясо из холодильника за 30–40 минут до жарки. Тщательно обсушите бумажными полотенцами.","Посолите и поперчите стейк со всех сторон.","Раскалите сковороду на сильном огне 3–5 минут до лёгкого дыма, добавьте оливковое масло.","Выложите стейк и жарьте 2–3 минуты без перемешивания до тёмной корочки, затем переверните.","Добавьте масло, раздавленный чеснок и розмарин, жарьте ещё 2–3 минуты, поливая стейк растопленным маслом.","Для прожарки medium доведите температуру внутри до 55–57 °C (для rare — 50 °C, для well done — 70 °C).","Переложите на доску, накройте фольгой и дайте отдохнуть 5 минут — соки распределятся.","Нарежьте поперёк волокон и подавайте с маслом со сковороды."] },
+    steps: ["Достаньте мясо из холодильника за 30–40 минут до жарки. Тщательно обсушите бумажными полотенцами.","Посолите и поперчите стейк со всех сторон.","Раскалите сковороду на сильном огне 3–5 минут до лёгкого дыма, добавьте оливковое масло.","Выложите стейк и жарьте 2–3 минуты без перемешивания до тёмной корочки, затем переверните.","Добавьте масло, раздавленный чеснок и розмарин, жарьте ещё 2–3 минуты, поливая стейк растопленным маслом.","Следите за температурой в центре: rare — 50 °C, medium rare — 54 °C, medium — 58–60 °C, well done — 70 °C и выше. Снимайте стейк с огня на 2–3 °C раньше.","Переложите на доску, накройте фольгой и дайте отдохнуть 5 минут — соки распределятся.","Нарежьте поперёк волокон и подавайте с маслом со сковороды."] },
   { id: 17, title: "Брускетта", img: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800", desc: "С томатами", category: "Закуски", time: "15 мин", servings: "4", difficulty: "Легко", calories: 160, weight: "350 г", protein: 5, fat: 6, carbs: 20,
     ingredients: ["Багет или чиабатта — 8 ломтиков","Помидоры спелые — 4 шт (400 г)","Чеснок — 2 зубчика","Оливковое масло — 3 ст. л.","Свежий базилик — 8 листьев","Бальзамический уксус — 1 ч. л.","Соль, перец — по вкусу"],
     equipment: ["Разделочная доска и нож","Тостер, гриль или сковорода-гриль","Миска","Ложка"],
@@ -473,10 +653,10 @@ const recipes = [
     ingredients: ["Квас хлебный — 1,2 л","Картофель — 3 шт","Яйца — 3 шт","Докторская колбаса — 250 г","Свежие огурцы — 3 шт","Редис — 6 шт","Зелёный лук и укроп — по пучку","Сметана — 4 ст. л.","Горчица — 1 ч. л.","Соль — по вкусу"],
     equipment: ["Кастрюля","Разделочная доска и нож","Большая кастрюля или миска","Половник","Ложка"],
     steps: ["Отварите картофель в кожуре (20 минут) и яйца вкрутую (10 минут), остудите и очистите.","Нарежьте картофель, яйца, колбасу, огурцы и редис мелкими кубиками 0,7 см.","Зелень мелко порубите, посыпьте солью и разомните ложкой, чтобы пустила сок.","Соедините все ингредиенты в большой кастрюле.","Добавьте горчицу и перемешайте.","Залейте холодным квасом, посолите по вкусу и перемешайте.","Подавайте охлаждённой, добавив в тарелку ложку сметаны."] },
-  { id: 22, title: "Бефстроганов", img: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=800", desc: "В сливочном соусе", category: "Основное", time: "40 мин", servings: "4", difficulty: "Средне", calories: 220, weight: "800 г", protein: 18, fat: 14, carbs: 6,
-    ingredients: ["Говяжья вырезка — 500 г","Шампиньоны — 250 г","Лук репчатый — 2 шт","Сливки 20% — 200 мл","Сметана — 3 ст. л.","Мука — 1 ст. л.","Горчица — 1 ч. л.","Растительное масло — 3 ст. л.","Соль, перец — по вкусу","Петрушка — для подачи"],
+  { id: 22, title: "Бефстроганов", img: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=800", desc: "В сметанном соусе", category: "Основное", time: "40 мин", servings: "4", difficulty: "Средне", calories: 220, weight: "800 г", protein: 18, fat: 14, carbs: 6,
+    ingredients: ["Говяжья вырезка — 500 г","Шампиньоны — 250 г","Лук репчатый — 2 шт","Сметана 20% — 200 г","Мука — 1 ст. л.","Томатная паста — 1 ст. л.","Горчица — 1 ч. л.","Растительное масло — 3 ст. л.","Соль, перец — по вкусу","Петрушка — для подачи"],
     equipment: ["Сковорода с высокими бортами","Разделочная доска","Острый нож","Деревянная лопатка","Миска"],
-    steps: ["Мясо нарежьте поперёк волокон полосками толщиной 1 см и длиной 4–5 см.","Грибы нарежьте пластинами, лук — тонкими полукольцами.","Разогрейте 2 ст. л. масла на сильном огне, обжарьте мясо порциями по 2–3 минуты до корочки, переложите в миску.","В той же сковороде добавьте остаток масла и обжарьте лук 3 минуты, затем грибы ещё 6 минут.","Всыпьте муку, перемешайте 1 минуту.","Влейте сливки, добавьте горчицу и сметану, перемешайте и прогрейте 3 минуты.","Верните мясо с соком, посолите, поперчите и тушите на слабом огне 8–10 минут.","Посыпьте петрушкой и подавайте с картофельным пюре или пастой."] },
+    steps: ["Мясо нарежьте поперёк волокон полосками толщиной 1 см и длиной 4–5 см.","Грибы нарежьте пластинами, лук — тонкими полукольцами.","Разогрейте 2 ст. л. масла на сильном огне, обжарьте мясо порциями по 2–3 минуты до корочки, переложите в миску.","В той же сковороде добавьте остаток масла и обжарьте лук 3 минуты, затем грибы ещё 6 минут.","Всыпьте муку и томатную пасту, перемешайте 1 минуту.","Влейте 100 мл горячей воды, добавьте горчицу, доведите до кипения и варите 3 минуты.","Снимите с сильного огня, введите сметану, посолите, поперчите, верните мясо с соком и прогрейте на слабом огне 5 минут, не доводя до кипения (иначе сметана свернётся).","Посыпьте петрушкой и подавайте с картофельным пюре или пастой."] },
   { id: 23, title: "Капрезе", img: "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=800", desc: "С моцареллой", category: "Закуски", time: "10 мин", servings: "2", difficulty: "Легко", calories: 180, weight: "300 г", protein: 10, fat: 12, carbs: 4,
     ingredients: ["Помидоры спелые — 3 шт (300 г)","Моцарелла — 125 г","Свежий базилик — 10 листьев","Оливковое масло extra virgin — 2 ст. л.","Бальзамический крем — 1 ч. л.","Морская соль — щепотка","Чёрный перец — по вкусу"],
     equipment: ["Разделочная доска","Острый нож","Плоская тарелка","Ложка"],
@@ -501,10 +681,10 @@ const recipes = [
     ingredients: ["Молоко холодное — 250 мл","Мороженое пломбир — 150 г","Банан спелый — 1 шт","Мёд — 1 ч. л.","Корица — щепотка"],
     equipment: ["Блендер","Мерный стакан","Нож и доска","Высокие стаканы","Ложка для мороженого"],
     steps: ["Очистите банан и нарежьте кружочками.","Положите банан, мороженое и мёд в чашу блендера.","Влейте холодное молоко.","Взбивайте 30–40 секунд до однородной пышной пены.","Разлейте по стаканам, посыпьте корицей и подавайте сразу."] },
-  { id: 29, title: "Панкейки", img: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?w=800", desc: "Пышные оладьи", category: "Завтрак", time: "20 мин", servings: "3", difficulty: "Легко", calories: 220, weight: "400 г", protein: 6, fat: 8, carbs: 30,
-    ingredients: ["Мука — 200 г","Кефир — 250 мл","Яйцо — 1 шт","Сахар — 2 ст. л.","Разрыхлитель — 1 ч. л.","Сода — 1/2 ч. л.","Соль — щепотка","Масло для жарки — 2 ст. л.","Кленовый сироп или мёд — для подачи"],
-    equipment: ["Миска","Венчик","Сковорода с антипригарным покрытием","Половник","Лопатка","Сито"],
-    steps: ["Смешайте кефир, яйцо и сахар венчиком.","Просейте муку с разрыхлителем, содой и солью, добавьте в жидкую смесь.","Размешайте до густой консистенции со слабыми комочками — не перемешивайте долго.","Оставьте тесто на 5 минут, чтобы оно набухло.","Разогрейте сковороду на среднем огне, слегка смажьте маслом.","Выливайте по 2 ст. л. теста, формируя панкейки диаметром 8–10 см.","Жарьте 2 минуты до пузырьков на поверхности, переверните и жарьте ещё 1–1,5 минуты.","Подавайте стопкой с сиропом, мёдом или ягодами."] },
+  { id: 29, title: "Банановые панкейки", img: "", desc: "Без муки, на овсянке", category: "Завтрак", time: "20 мин", servings: "2", difficulty: "Легко", calories: 140, weight: "350 г", protein: 6, fat: 4, carbs: 21,
+    ingredients: ["Спелые бананы — 2 шт (250 г)","Яйца — 2 шт","Овсяные хлопья — 80 г","Разрыхлитель — 1/2 ч. л.","Корица — 1/2 ч. л.","Масло для сковороды — 1 ч. л.","Ягоды и мёд — для подачи"],
+    equipment: ["Блендер","Антипригарная сковорода","Узкая лопатка","Столовая ложка"],
+    steps: ["Измельчите хлопья в блендере в муку, 30 секунд.","Добавьте бананы, яйца, разрыхлитель и корицу, взбейте до гладкого теста.","Оставьте тесто на 5 минут, чтобы хлопья набухли.","Слегка смажьте сковороду и разогрейте на среднем огне, затем убавьте до слабого.","Выкладывайте по 2 ст. л. теста небольшими панкейками диаметром 7–8 см — они нежные и крупные тяжело переворачивать.","Жарьте 2 минуты до сухих краёв, аккуратно переверните и жарьте ещё 1–2 минуты.","Подавайте с ягодами, йогуртом или мёдом."] },
   { id: 30, title: "Ленивая овсянка", img: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=800", desc: "В банке", category: "Завтрак", time: "5 мин", servings: "1", difficulty: "Легко", calories: 180, weight: "250 г", protein: 7, fat: 5, carbs: 28,
     ingredients: ["Овсяные хлопья — 50 г","Йогурт натуральный — 100 г","Молоко — 100 мл","Семена чиа — 1 ч. л.","Мёд — 1 ч. л.","Фрукты или ягоды — 80 г"],
     equipment: ["Стеклянная банка 350 мл с крышкой","Ложка","Нож и доска"],
@@ -512,7 +692,7 @@ const recipes = [
   { id: 31, title: "Чечевичный суп", img: "https://images.pexels.com/photos/5638064/pexels-photo-5638064.jpeg?w=800", desc: "Сытный суп-пюре", category: "Супы", time: "40 мин", servings: "4", difficulty: "Легко", calories: 110, weight: "1.5 кг", protein: 8, fat: 3, carbs: 15,
     ingredients: ["Красная чечевица — 200 г","Морковь — 1 шт","Лук — 1 шт","Чеснок — 2 зубчика","Вода или бульон — 1,2 л","Оливковое масло — 2 ст. л.","Зира — 1 ч. л.","Лимонный сок — 1 ст. л.","Соль, перец — по вкусу"],
     equipment: ["Кастрюля 3 л","Погружной блендер","Сито","Разделочная доска и нож","Деревянная ложка"],
-    steps: ["Чечевицу промойте в сите до прозрачной воды.","Лук, морковь и чеснок мелко нарежьте.","Обжарьте лук и морковь на оливковом масле 5 минут, добавьте чеснок и зиру на 30 секунд.","Всыпьте чечевицу, влейте воду или бульон, доведите до кипения.","Варите на слабом огне 20 минут, пока чечевица разварится.","Взбейте суп блендером до кремовой консистенции, посолите и поперчите.","Добавьте лимонный сок и подавайте с гренками или зеленью."] },
+    steps: ["Чечевицу промойте в сите до прозрачной воды.","Лук, морковь и чеснок мелко нарежьте.","Обжарьте лук и морковь на оливковом масле 5 минут, добавьте чеснок и зиру на 30 секунд.","Всыпьте чечевицу, влейте воду или бульон, доведите до кипения.","Варите на слабом огне 20 минут, пока чечевица не станет мягкой.","Взбейте суп блендером до кремовой консистенции, посолите и поперчите.","Добавьте лимонный сок и подавайте с гренками или зеленью."] },
   { id: 32, title: "Курица в сливках", img: "https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?w=800", desc: "Нежное филе", category: "Основное", time: "30 мин", servings: "2", difficulty: "Легко", calories: 240, weight: "500 г", protein: 25, fat: 14, carbs: 4,
     ingredients: ["Куриное филе — 400 г","Сливки 20% — 200 мл","Твёрдый сыр — 60 г","Чеснок — 2 зубчика","Растительное масло — 1 ст. л.","Паприка — 1/2 ч. л.","Соль, перец — по вкусу","Петрушка — для подачи"],
     equipment: ["Сковорода с крышкой","Разделочная доска и нож","Тёрка","Деревянная лопатка"],
@@ -530,9 +710,9 @@ const recipes = [
     equipment: ["4 керамических горшочка","Сковорода","Духовка","Разделочная доска и нож","Деревянная лопатка","Противень"],
     steps: ["Мясо нарежьте кубиками 3 см, обсушите. Картофель и морковь нарежьте крупными кусками, лук — полукольцами.","Разогрейте масло и обжарьте мясо порциями на сильном огне до золотистой корочки.","Добавьте лук и морковь, жарьте 5 минут. Добавьте томатную пасту и чеснок, обжарьте 1 минуту.","Разложите по горшочкам мясо с овощами и картофель, добавьте лавровый лист, соль, перец и паприку.","Залейте бульоном до 2/3 горшочка, накройте крышками.","Поставьте горшочки на противень в холодную духовку, включите 180 °C.","Тушите 60–70 минут до мягкости мяса.","Посыпьте зеленью и подавайте прямо в горшочках."] },
   { id: 36, title: "Роллы", img: "https://images.pexels.com/photos/2098085/pexels-photo-2098085.jpeg?w=800", desc: "Филадельфия", category: "Закуски", time: "50 мин", servings: "2", difficulty: "Сложно", calories: 180, weight: "400 г", protein: 8, fat: 7, carbs: 20,
-    ingredients: ["Рис для суши — 200 г","Вода — 250 мл","Рисовый уксус — 3 ст. л.","Сахар — 1 ст. л.","Соль — 1/2 ч. л.","Нори — 3 листа","Лосось слабосолёный — 150 г","Сливочный сыр — 100 г","Огурец — 1 шт","Соевый соус, васаби, имбирь — для подачи"],
+    ingredients: ["Рис для суши — 150 г","Вода — 190 мл","Рисовый уксус — 2 ст. л.","Сахар — 1 ст. л.","Соль — 1/2 ч. л.","Нори — 1 лист (пополам)","Лосось слабосолёный — 150 г","Сливочный сыр — 80 г","Огурец — 1/2 шт","Соевый соус, васаби, имбирь — для подачи"],
     equipment: ["Бамбуковый коврик (макису)","Плёнка пищевая","Острый длинный нож","Кастрюля с крышкой","Миска с водой","Деревянная лопатка","Разделочная доска"],
-    steps: ["Промойте рис 6–7 раз до прозрачной воды. Залейте водой и варите под крышкой на слабом огне 15 минут, затем оставьте на 10 минут.","Смешайте уксус, сахар и соль, нагрейте до растворения, влейте в рис и аккуратно перемешайте, остудите до комнатной температуры.","Рыбу нарежьте полосками, огурец — соломкой.","Оберните коврик пищевой плёнкой, положите лист нори шершавой стороной вверх.","Смочите руки водой и распределите тонким слоем рис по нори, оставив 1 см сверху.","Выложите полоску сливочного сыра, огурец и лосось в нижней части листа.","Сверните ролл, плотно прижимая коврик, и придержите 30 секунд.","Нарежьте мокрым острым ножом на 8 частей и подавайте с соевым соусом, имбирём и васаби."] },
+    steps: ["Промойте рис 6–7 раз до прозрачной воды. Залейте водой и варите под крышкой на слабом огне 15 минут, затем оставьте на 10 минут.","Смешайте уксус, сахар и соль, нагрейте до растворения, влейте в рис и аккуратно перемешайте, остудите до комнатной температуры.","Рыбу нарежьте: несколько тонких ломтиков отложите для верха, остальное — полосками. Огурец нарежьте соломкой.","Разрежьте лист нори пополам. Оберните коврик пищевой плёнкой и положите половину листа шершавой стороной вверх.","Смоченными руками распределите на нори тонкий ровный слой риса до самых краёв.","Переверните лист рисом вниз на плёнку. В нижней части нори выложите полоску сливочного сыра, огурец и полоски лосося.","Сверните ролл, плотно прижимая коврик, и придержите 30 секунд — рис окажется снаружи.","Сверху уложите ломтики лосося и прижмите плёнкой. Повторите со второй половиной нори.","Нарежьте каждый ролл вместе с плёнкой мокрым острым ножом на 8 частей, затем снимите плёнку. Подавайте с соевым соусом, имбирём и васаби."] },
   { id: 37, title: "Шашлык", img: "https://images.pexels.com/photos/1105325/pexels-photo-1105325.jpeg?w=800", desc: "Из свинины", category: "Основное", time: "3 ч", servings: "4", difficulty: "Средне", calories: 320, weight: "1 кг", protein: 22, fat: 24, carbs: 2,
     ingredients: ["Свиная шея — 1 кг","Лук репчатый — 3 шт","Минеральная вода газированная — 200 мл","Уксус 6% — 2 ст. л. (по желанию)","Соль — 1,5 ч. л.","Чёрный перец — 1 ч. л.","Лавровый лист — 3 шт","Специи для шашлыка — 1 ст. л."],
     equipment: ["Мангал","Шампуры","Угли","Большая миска или кастрюля для маринада","Щипцы","Разделочная доска и нож","Веер или обмахиватель","Бутылка с водой для тушения пламени"],
@@ -542,13 +722,77 @@ const recipes = [
     equipment: ["Небольшая кастрюля","Венчик","Тёрка","Деревянная ложка","Соусник"],
     steps: ["Натрите сыр на мелкой тёрке.","Растопите масло в кастрюле на слабом огне, добавьте муку и перемешивайте 1 минуту.","Тонкой струйкой влейте сливки, постоянно взбивая венчиком, чтобы не было комочков.","Прогревайте 2–3 минуты, пока соус слегка не загустеет.","Снимите с сильного огня, добавьте сыр порциями, помешивая до однородности.","Добавьте паприку, чеснок и соль, перемешайте.","Подавайте тёплым с начос или овощами."] },
   { id: 39, title: "Панна-котта", img: "https://images.pexels.com/photos/5707923/pexels-photo-5707923.jpeg?w=800", desc: "Молочный десерт", category: "Десерт", time: "20 мин", servings: "4", difficulty: "Средне", calories: 250, weight: "500 г", protein: 3, fat: 18, carbs: 20,
-    ingredients: ["Сливки 33% — 400 мл","Молоко — 100 мл","Сахар — 50 г","Желатин — 8 г (4 листа или 2 ч. л. порошка)","Ванильный экстракт — 1 ч. л.","Ягодный соус или джем — 100 г"],
+    ingredients: ["Сливки 33% — 400 мл","Молоко — 100 мл","Сахар — 50 г","Желатин листовой — 4 листа (8 г)","Ванильный экстракт — 1 ч. л.","Ягодный соус или джем — 100 г"],
     equipment: ["Ковшик","Венчик","4 формы или ramekin","Мисочка для желатина","Плёнка","Ложка"],
-    steps: ["Замочите желатин в 3 ст. л. холодной воды на 10 минут до набухания.","Соедините сливки, молоко и сахар в ковшике, нагрейте до появления пара, не доводя до кипения.","Снимите с огня, добавьте набухший желатин и ваниль, размешайте до полного растворения.","Остудите смесь 10 минут, затем разлейте по формам.","Накройте плёнкой и уберите в холодильник минимум на 4 часа до застывания.","Для подачи опустите формы на 10 секунд в горячую воду, переверните на тарелку.","Полейте ягодным соусом или джемом."] },
+    steps: ["Замочите листы желатина в холодной воде на 5–10 минут до мягкости, затем отожмите.","Соедините сливки, молоко и сахар в ковшике, нагрейте до появления пара, не доводя до кипения.","Снимите с огня, добавьте отжатый желатин и ваниль, размешайте до полного растворения.","Остудите смесь 10 минут, затем разлейте по формам.","Накройте плёнкой и уберите в холодильник минимум на 4 часа до застывания.","Для подачи опустите формы на 10 секунд в горячую воду, переверните на тарелку.","Полейте ягодным соусом или джемом."] },
   { id: 40, title: "Смузи", img: "https://images.pexels.com/photos/775032/pexels-photo-775032.jpeg?w=800", desc: "Из ягод", category: "Напитки", time: "5 мин", servings: "1", difficulty: "Легко", calories: 110, weight: "300 мл", protein: 2, fat: 1, carbs: 24,
     ingredients: ["Ягоды (клубника, черника, малина) — 150 г","Банан — 1 шт","Йогурт натуральный — 100 г","Молоко или вода — 50 мл","Мёд — 1 ч. л. (по вкусу)","Лёд — 3–4 кубика"],
     equipment: ["Блендер","Мерный стакан","Нож и доска","Высокий стакан","Трубочка"],
-    steps: ["Очистите банан и нарежьте кусочками. Ягоды промойте; замороженные ягоды можно не размораживать.","Положите в блендер банан, ягоды, йогурт, молоко и мёд.","Добавьте лёд.","Взбивайте на максимальной скорости 40–60 секунд до однородной гладкой массы.","Попробуйте и при необходимости добавьте мёд или немного молока для жидкости.","Перелейте в стакан и подавайте сразу."] }
+    steps: ["Очистите банан и нарежьте кусочками. Ягоды промойте; замороженные ягоды можно не размораживать.","Положите в блендер банан, ягоды, йогурт, молоко и мёд.","Добавьте лёд.","Взбивайте на максимальной скорости 40–60 секунд до однородной гладкой массы.","Попробуйте и при необходимости добавьте мёд или немного молока для жидкости.","Перелейте в стакан и подавайте сразу."] },
+  { id: 41, title: "Омлет с сыром", img: "", desc: "Пышный омлет на сковороде", category: "Завтрак", time: "10 мин", servings: "2", difficulty: "Легко", calories: 190, weight: "300 г", protein: 13, fat: 14, carbs: 2,
+    ingredients: ["Яйца — 4 шт","Молоко — 100 мл","Твёрдый сыр — 60 г","Сливочное масло — 15 г","Соль — 1/2 ч. л.","Зелень — 10 г"],
+    equipment: ["Сковорода 24 см с крышкой","Миска","Венчик","Тёрка","Лопатка"],
+    steps: ["Взбейте яйца с молоком и солью венчиком до однородности, 1 минуту.","Сыр натрите на крупной тёрке, зелень порубите.","Растопите масло на сковороде на среднем огне.","Влейте яичную смесь и готовьте 2 минуты, пока края не схватятся.","Посыпьте сыром и зеленью, накройте крышкой, убавьте огонь и готовьте 3–4 минуты.","Сложите пополам и подавайте горячим."] },
+  { id: 42, title: "Запечённая курица с картофелем", img: "", desc: "Курица с хрустящей корочкой", category: "Основное", time: "1.5 ч", servings: "4", difficulty: "Легко", calories: 210, weight: "1.8 кг", protein: 17, fat: 12, carbs: 9,
+    ingredients: ["Курица целая — 1,3 кг","Картофель — 800 г","Чеснок — 4 зубчика","Растительное масло — 3 ст. л.","Паприка — 2 ч. л.","Соль — 2 ч. л.","Чёрный перец — 1 ч. л.","Розмарин — 2 веточки"],
+    equipment: ["Глубокий противень или форма","Духовка","Миска","Кулинарная нить","Мясной термометр","Фольга"],
+    steps: ["Разогрейте духовку до 200 °C. Курицу обсушите бумажным полотенцем.","Смешайте 2 ст. л. масла, паприку, 1,5 ч. л. соли, перец и измельчённый чеснок, натрите курицу снаружи и внутри.","Картофель нарежьте крупными дольками, смешайте с оставшимся маслом, солью и розмарином.","Выложите картофель на противень, сверху поместите курицу грудкой вверх.","Запекайте 20 минут при 200 °C, затем убавьте до 180 °C и запекайте ещё 50–60 минут.","Готовность: температура в самой толстой части бедра 80 °C, сок прозрачный. Если корочка темнеет, накройте фольгой.","Оставьте курицу на 10 минут под фольгой и подавайте с картофелем."] },
+  { id: 43, title: "Лазанья", img: "", desc: "С мясным соусом и бешамелем", category: "Основное", time: "1.5 ч", servings: "6", difficulty: "Сложно", calories: 190, weight: "1.5 кг", protein: 11, fat: 10, carbs: 15,
+    ingredients: ["Листы для лазаньи — 250 г","Говяжий фарш — 500 г","Томаты в собственном соку — 400 г","Лук — 1 шт","Морковь — 1 шт","Чеснок — 2 зубчика","Молоко — 600 мл","Сливочное масло — 50 г","Мука — 50 г","Моцарелла — 200 г","Пармезан — 50 г","Мускатный орех — щепотка","Соль, перец — по вкусу"],
+    equipment: ["Форма 20×30 см","Сковорода","Кастрюля","Венчик","Тёрка","Духовка","Фольга"],
+    steps: ["Обжарьте мелко нарезанные лук и морковь 5 минут, добавьте чеснок и фарш, жарьте 8 минут.","Добавьте томаты, посолите, поперчите, тушите на слабом огне 25 минут.","Для бешамеля растопите масло, всыпьте муку и перемешайте 1 минуту. Тонкой струйкой влейте молоко, помешивая, и варите 5–7 минут до густоты. Добавьте мускат и соль.","Разогрейте духовку до 190 °C.","На дно формы нанесите ложку бешамеля, выложите слой листов, мясной соус, бешамель и немного моцареллы. Повторите 4 раза.","Верхний слой покройте бешамелем, моцареллой и тёртым пармезаном.","Накройте фольгой, выпекайте 30 минут, снимите фольгу и запекайте ещё 15 минут до румяной корочки.","Дайте постоять 10 минут и нарежьте порциями."] },
+  { id: 44, title: "Куриный суп с лапшой", img: "", desc: "Домашний суп на курином бульоне", category: "Супы", time: "50 мин", servings: "5", difficulty: "Легко", calories: 55, weight: "2.2 кг", protein: 4, fat: 2, carbs: 6,
+    ingredients: ["Куриные бёдра — 500 г","Вода — 2,5 л","Лапша или вермишель — 100 г","Картофель — 2 шт","Морковь — 1 шт","Лук — 1 шт","Лавровый лист — 1 шт","Соль — 2 ч. л.","Зелень — 20 г"],
+    equipment: ["Кастрюля 4 л","Шумовка","Разделочная доска и нож","Половник"],
+    steps: ["Курицу залейте холодной водой, доведите до кипения и снимите пену.","Добавьте целую луковицу и лавровый лист, варите на слабом огне 30 минут.","Достаньте курицу и лук, разберите мясо на куски.","Картофель нарежьте кубиками, морковь — кружочками, добавьте в бульон и варите 10 минут.","Всыпьте лапшу и варите 4–5 минут.","Верните мясо, посолите и прогрейте 2 минуты.","Посыпьте зеленью и подавайте."] },
+  { id: 45, title: "Лосось с лимоном в духовке", img: "", desc: "Нежная рыба за 25 минут", category: "Основное", time: "25 мин", servings: "2", difficulty: "Легко", calories: 210, weight: "400 г", protein: 22, fat: 13, carbs: 1,
+    ingredients: ["Филе лосося — 2 куска по 200 г","Лимон — 1 шт","Оливковое масло — 2 ст. л.","Чеснок — 2 зубчика","Укроп — 10 г","Соль — 1/2 ч. л.","Чёрный перец — по вкусу"],
+    equipment: ["Форма для запекания","Фольга или пергамент","Духовка","Нож и доска","Кисточка"],
+    steps: ["Разогрейте духовку до 200 °C, застелите форму пергаментом.","Филе обсушите, посолите, поперчите и смажьте маслом.","Измельчите чеснок и смешайте с рублёным укропом и цедрой половины лимона.","Выложите рыбу кожей вниз, сверху распределите смесь и положите кружки лимона.","Запекайте 12–15 минут: мякоть должна легко расслаиваться вилкой.","Сбрызните лимонным соком и подавайте с овощами или рисом."] },
+  { id: 46, title: "Салат с авокадо и креветками", img: "", desc: "Лёгкий салат с цитрусовой заправкой", category: "Салаты", time: "20 мин", servings: "2", difficulty: "Легко", calories: 150, weight: "400 г", protein: 10, fat: 10, carbs: 6,
+    ingredients: ["Креветки очищенные — 200 г","Авокадо — 1 шт","Огурец — 1 шт","Салатные листья — 80 г","Черри — 6 шт","Оливковое масло — 2 ст. л.","Лимонный сок — 1 ст. л.","Соль, перец — по вкусу"],
+    equipment: ["Сковорода","Салатник","Нож и доска","Миска для заправки","Венчик"],
+    steps: ["Креветки обжарьте на 1 ч. л. масла 2–3 минуты до розового цвета, посолите.","Авокадо очистите и нарежьте кубиками, сбрызните лимонным соком.","Огурец нарежьте полукольцами, черри — половинками, листья порвите руками.","Смешайте оставшееся масло, лимонный сок, соль и перец.","Соедините овощи и авокадо, добавьте креветки.","Полейте заправкой, аккуратно перемешайте и подавайте сразу."] },
+  { id: 47, title: "Хумус", img: "", desc: "Нежная паста из нута", category: "Закуски", time: "15 мин", servings: "4", difficulty: "Легко", calories: 230, weight: "400 г", protein: 8, fat: 14, carbs: 18,
+    ingredients: ["Нут консервированный — 400 г","Тахини — 3 ст. л.","Лимонный сок — 3 ст. л.","Чеснок — 1 зубчик","Оливковое масло — 3 ст. л.","Холодная вода — 3 ст. л.","Зира — 1/2 ч. л.","Соль — 1/2 ч. л.","Паприка — для подачи"],
+    equipment: ["Блендер","Дуршлаг","Ложка","Миска для подачи"],
+    steps: ["Слейте жидкость с нута, оставив 3 ст. л. Промойте нут.","Взбейте тахини с лимонным соком 1 минуту до светлой массы.","Добавьте чеснок, зиру, соль и нут, взбивайте 2 минуты.","Постепенно влейте оставленную жидкость от нута и холодную воду, пока не получится гладкая кремовая консистенция.","Переложите в миску, сделайте ложкой углубление, влейте масло и посыпьте паприкой.","Подавайте с лепёшкой, овощами или чипсами."] },
+  { id: 48, title: "Маффины с черникой", img: "", desc: "Воздушные кексы с ягодами", category: "Выпечка", time: "35 мин", servings: "12", difficulty: "Легко", calories: 280, weight: "700 г", protein: 5, fat: 11, carbs: 40,
+    ingredients: ["Мука — 250 г","Сахар — 120 г","Яйца — 2 шт","Молоко — 200 мл","Растительное масло — 80 мл","Разрыхлитель — 2 ч. л.","Черника — 150 г","Соль — щепотка"],
+    equipment: ["Форма для маффинов на 12","Бумажные формочки","Две миски","Венчик","Лопатка","Духовка","Шпажка"],
+    steps: ["Разогрейте духовку до 190 °C, вставьте формочки в форму.","Смешайте муку, сахар, разрыхлитель и соль.","В другой миске взбейте яйца, молоко и масло.","Влейте жидкую смесь в сухую и перемешайте лопаткой 10–15 секунд, комочки допустимы.","Аккуратно добавьте чернику.","Наполните формочки на 3/4 и выпекайте 20–22 минуты до золотистого цвета, шпажка выходит сухой.","Остудите 10 минут перед подачей."] },
+  { id: 49, title: "Банановый хлеб", img: "", desc: "Влажный кекс из спелых бананов", category: "Выпечка", time: "1 ч", servings: "8", difficulty: "Легко", calories: 270, weight: "700 г", protein: 4, fat: 9, carbs: 44,
+    ingredients: ["Спелые бананы — 3 шт (300 г)","Мука — 220 г","Сахар — 100 г","Яйца — 2 шт","Сливочное масло — 80 г","Разрыхлитель — 1 ч. л.","Корица — 1 ч. л.","Грецкие орехи — 50 г"],
+    equipment: ["Форма для кекса 22×11 см","Пергамент","Вилка","Миска","Лопатка","Духовка","Шпажка"],
+    steps: ["Разогрейте духовку до 175 °C, выстелите форму пергаментом.","Разомните бананы вилкой в пюре.","Добавьте растопленное масло, сахар и яйца, перемешайте.","Всыпьте муку, разрыхлитель и корицу, перемешайте до однородности.","Добавьте рубленые орехи, переложите тесто в форму.","Выпекайте 50–55 минут, шпажка выходит сухой. Если верх темнеет, накройте фольгой.","Остудите в форме 15 минут, затем на решётке."] },
+  { id: 50, title: "Клюквенный морс", img: "", desc: "Освежающий ягодный напиток", category: "Напитки", time: "15 мин", servings: "6", difficulty: "Легко", calories: 40, weight: "1.5 л", protein: 0, fat: 0, carbs: 10, 
+    ingredients: ["Клюква — 300 г","Сахар — 100 г","Вода — 1,5 л","Мёд — 1 ст. л.","Лимон — 1/2 шт"],
+    equipment: ["Кастрюля 3 л","Толкушка","Сито","Кувшин","Ложка"],
+    steps: ["Клюкву промойте и разомните толкушкой в кастрюле.","Отожмите сок через сито и отставьте в холодильник.","Выжимки залейте водой, добавьте сахар и доведите до кипения.","Варите 5 минут, снимите с огня и процедите.","Остудите до тёплого состояния, добавьте мёд, сок клюквы и лимонный сок.","Охладите и подавайте со льдом."] },
+  { id: 51, title: "Шакшука", img: "", desc: "Яйца в пряном томатном соусе", category: "Завтрак", time: "25 мин", servings: "2", difficulty: "Легко", calories: 110, weight: "500 г", protein: 7, fat: 7, carbs: 6,
+    ingredients: ["Яйца — 4 шт","Помидоры в собственном соку — 400 г","Сладкий перец — 1 шт","Лук — 1 шт","Чеснок — 2 зубчика","Оливковое масло — 2 ст. л.","Паприка — 1 ч. л.","Зира — 1/2 ч. л.","Соль — 1/2 ч. л.","Петрушка или кинза — 10 г"],
+    equipment: ["Сковорода с крышкой","Разделочная доска и нож","Деревянная лопатка","Ложка"],
+    steps: ["Лук и перец нарежьте кубиками, чеснок измельчите.","Обжарьте лук и перец на масле 5 минут до мягкости, добавьте чеснок, паприку и зиру на 30 секунд.","Влейте помидоры, разомните их ложкой, посолите и тушите 8–10 минут до загустения.","Сделайте в соусе 4 углубления и вбейте в каждое по яйцу.","Накройте крышкой и готовьте на слабом огне 5–7 минут: белок должен схватиться, желток остаться жидким.","Посыпьте зеленью и подавайте прямо в сковороде с хлебом."] },
+  { id: 52, title: "Тыквенный крем-суп", img: "", desc: "Бархатный суп со сливками", category: "Супы", time: "40 мин", servings: "4", difficulty: "Легко", calories: 75, weight: "1.2 кг", protein: 2, fat: 4, carbs: 8,
+    ingredients: ["Тыква — 700 г","Лук — 1 шт","Морковь — 1 шт","Чеснок — 1 зубчик","Овощной или куриный бульон — 700 мл","Сливки 20% — 150 мл","Сливочное масло — 20 г","Соль — 1 ч. л.","Мускатный орех — щепотка","Тыквенные семечки — для подачи"],
+    equipment: ["Кастрюля 3 л","Погружной блендер","Разделочная доска и нож","Деревянная ложка"],
+    steps: ["Тыкву очистите и нарежьте кубиками 2 см, лук и морковь нарежьте мелко.","Растопите масло и обжарьте лук с морковью 5 минут, добавьте чеснок.","Добавьте тыкву, залейте бульоном и варите 20 минут до мягкости.","Взбейте суп блендером до гладкости.","Влейте сливки, добавьте соль и мускат, прогрейте 3 минуты без кипения.","Подавайте, посыпав обжаренными семечками."] },
+  { id: 53, title: "Паста болоньезе", img: "", desc: "Спагетти с мясным соусом", category: "Основное", time: "1 ч", servings: "4", difficulty: "Средне", calories: 170, weight: "1.2 кг", protein: 9, fat: 6, carbs: 21,
+    ingredients: ["Спагетти — 320 г","Говяжий фарш — 400 г","Лук — 1 шт","Морковь — 1 шт","Сельдерей — 1 стебель","Чеснок — 2 зубчика","Томаты в собственном соку — 400 г","Томатная паста — 2 ст. л.","Красное вино — 100 мл","Оливковое масло — 2 ст. л.","Соль, перец, орегано — по вкусу","Пармезан — 40 г"],
+    equipment: ["Глубокая сковорода или сотейник","Кастрюля для пасты","Дуршлаг","Тёрка","Деревянная лопатка"],
+    steps: ["Мелко нарежьте лук, морковь и сельдерей, обжарьте на масле 8 минут до мягкости, добавьте чеснок.","Увеличьте огонь, добавьте фарш и жарьте 8 минут, разбивая комочки, до исчезновения розового цвета.","Добавьте томатную пасту, жарьте 1 минуту, влейте вино и выпарите наполовину.","Добавьте томаты, орегано, соль и перец, тушите на слабом огне 30–40 минут, помешивая.","Отварите спагетти в подсоленной воде до состояния al dente, оставьте 100 мл воды от пасты.","Смешайте пасту с соусом на сковороде, при необходимости добавьте воды.","Подавайте с тёртым пармезаном."] },
+  { id: 54, title: "Домашняя гранола", img: "", desc: "Хрустящая овсянка с орехами и мёдом", category: "Завтрак", time: "35 мин", servings: "8", difficulty: "Легко", calories: 420, weight: "500 г", protein: 10, fat: 18, carbs: 55,
+    ingredients: ["Овсяные хлопья — 300 г","Орехи (миндаль, фундук) — 100 г","Мёд — 80 г","Растительное масло — 50 мл","Корица — 1 ч. л.","Соль — щепотка","Сухофрукты — 80 г"],
+    equipment: ["Противень","Пергамент","Большая миска","Лопатка","Духовка"],
+    steps: ["Разогрейте духовку до 160 °C, застелите противень пергаментом.","Смешайте хлопья, рубленые орехи, корицу и соль.","Подогрейте мёд с маслом 30 секунд, влейте в сухую смесь и перемешайте.","Выложите ровным слоем толщиной 1 см и запекайте 25 минут, перемешав на 12-й минуте.","Достаньте, когда гранола станет золотистой. Хруст появляется при остывании, не трогайте её.","Остудите полностью, добавьте сухофрукты и храните в банке до 3 недель."] },
+  { id: 55, title: "Гуакамоле", img: "", desc: "Мексиканский соус из авокадо", category: "Закуски", time: "10 мин", servings: "4", difficulty: "Легко", calories: 160, weight: "300 г", protein: 2, fat: 14, carbs: 9,
+    ingredients: ["Спелые авокадо — 2 шт","Лайм — 1 шт","Помидор — 1 шт","Красный лук — 1/4 шт","Кинза — 10 г","Чеснок — 1 зубчик","Соль — 1/2 ч. л.","Перец чили — по вкусу"],
+    equipment: ["Миска","Вилка","Нож и доска","Выжималка для цитрусовых"],
+    steps: ["Разрежьте авокадо, извлеките косточку и выложите мякоть в миску.","Сбрызните соком лайма и разомните вилкой, оставив небольшие кусочки.","Помидор нарежьте мелкими кубиками, лук и кинзу мелко порубите, чеснок раздавите.","Смешайте всё с авокадо, добавьте соль и чили.","Подавайте сразу с начос или лепёшкой. Для хранения прижмите плёнку к поверхности."] },
+  { id: 56, title: "Имбирный чай с лимоном", img: "", desc: "Согревающий напиток", category: "Напитки", time: "15 мин", servings: "3", difficulty: "Легко", calories: 25, weight: "700 мл", protein: 0, fat: 0, carbs: 6,
+    ingredients: ["Корень имбиря — 30 г","Вода — 800 мл","Лимон — 1/2 шт","Мёд — 2 ст. л.","Чёрный или зелёный чай — 2 ч. л.","Корица — 1 палочка"],
+    equipment: ["Ковшик","Тёрка или нож","Сито","Чайник для заварки","Кружки"],
+    steps: ["Имбирь очистите и нарежьте тонкими ломтиками или натрите.","Доведите воду до кипения, добавьте имбирь и корицу, варите 8 минут на слабом огне.","Добавьте чай, снимите с огня и настаивайте 3 минуты.","Процедите, добавьте сок лимона.","Когда чай остынет до 50–60 °C, добавьте мёд (в кипятке он теряет полезные свойства)."] }
 ];
 
 /* --- ЛОГИКА ТЕМЫ --- */
@@ -559,7 +803,9 @@ function toggleTheme() {
   document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
   localStorage.setItem('recipe_theme', isDark ? 'light' : 'dark');
 }
-if (localStorage.getItem('recipe_theme') === 'dark') {
+const savedTheme = localStorage.getItem('recipe_theme');
+const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
   document.documentElement.setAttribute('data-theme', 'dark');
   document.getElementById('themeToggle').textContent = '☀️';
 }
@@ -574,55 +820,179 @@ function showToast(message, type = 'success') {
   setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
 }
 
-/* --- СПИСОК ПОКУПОК --- */
-let shoppingList = JSON.parse(localStorage.getItem('recipe_shop_list') || '[]');
+/* --- ИНГРЕДИЕНТЫ: РАЗБОР И МАСШТАБ --- */
+const NUM_RE = /\d+\/\d+|\d+(?:[.,]\d+)?/g;
+function splitIngredient(str) {
+  const i = str.indexOf(' — ');
+  return i < 0 ? { name: str.trim(), amount: '' } : { name: str.slice(0, i).trim(), amount: str.slice(i + 3).trim() };
+}
+function toNum(t) { t = t.replace(',', '.'); if (t.includes('/')) { const [x, y] = t.split('/'); return x / y; } return parseFloat(t); }
+function fmtNum(n) { n = n >= 10 ? Math.round(n * 10) / 10 : Math.round(n * 100) / 100; return String(n).replace('.', ','); }
+function scaleText(text, f) { return f === 1 ? text : text.replace(NUM_RE, m => fmtNum(toNum(m) * f)); }
+function parseAmount(a) {
+  const m = a.match(/^(\d+\/\d+|\d+(?:[.,]\d+)?)\s*([^\d(),]*?)\s*$/);
+  if (!m) return null;
+  let qty = toNum(m[1]), unit = m[2].trim();
+  if (unit === 'кг') { qty *= 1000; unit = 'г'; } else if (unit === 'л') { qty *= 1000; unit = 'мл'; }
+  return { qty, unit };
+}
+function formatQty(qty, unit) {
+  if (unit === 'г' && qty >= 1000) return fmtNum(qty / 1000) + ' кг';
+  if (unit === 'мл' && qty >= 1000) return fmtNum(qty / 1000) + ' л';
+  return fmtNum(qty) + (unit ? ' ' + unit : '');
+}
+
+/* --- КОРЗИНА (СПИСОК ПОКУПОК) --- */
+let cart = JSON.parse(localStorage.getItem('recipe_cart_v2') || 'null') || { items: [], done: [] };
+if (!cart.items.length) { // перенос старого списка
+  try {
+    JSON.parse(localStorage.getItem('recipe_shop_list') || '[]').forEach(t => cart.items.push({ rid: 0, title: 'Раньше', name: t, qty: null, unit: '', amount: '' }));
+    localStorage.removeItem('recipe_shop_list');
+  } catch (e) {}
+}
+function keyOf(it) { return it.qty != null ? `${it.name.toLowerCase()}|${it.unit}` : `${it.name.toLowerCase()}|raw|${it.rid}|${it.amount}`; }
+function mergedCart() {
+  const map = new Map();
+  cart.items.forEach(it => {
+    const k = keyOf(it);
+    if (!map.has(k)) map.set(k, { key: k, name: it.name, qty: it.qty, unit: it.unit, amount: it.amount, recipes: [] });
+    else if (it.qty != null) map.get(k).qty += it.qty;
+    const g = map.get(k); if (!g.recipes.includes(it.title)) g.recipes.push(it.title);
+  });
+  return [...map.values()];
+}
+function saveCart() { localStorage.setItem('recipe_cart_v2', JSON.stringify(cart)); updateShopBadge(); }
 function updateShopBadge() {
   const badge = document.getElementById('shopBadge');
-  if (shoppingList.length > 0) { badge.style.display = 'flex'; badge.textContent = shoppingList.length; } else { badge.style.display = 'none'; }
+  const n = mergedCart().filter(g => !cart.done.includes(g.key)).length;
+  badge.style.display = n > 0 ? 'flex' : 'none'; badge.textContent = n;
+}
+function servingsFactor(r) { return modalServings / (parseInt(r.servings) || 1); }
+function pushEntry(r, ing, f) {
+  const { name, amount } = splitIngredient(ing);
+  const scaled = scaleText(amount, f), p = parseAmount(scaled);
+  if (cart.items.some(x => x.rid === r.id && x.name === name)) return false;
+  cart.items.push({ rid: r.id, title: r.title, name, amount: scaled, qty: p ? p.qty : null, unit: p ? p.unit : '' });
+  return true;
+}
+function addIngredientToCart(r, idx) {
+  if (pushEntry(r, r.ingredients[idx], servingsFactor(r))) { saveCart(); showToast("Добавлено в корзину"); }
+  else showToast("Уже в корзине!", "error");
+}
+function addRecipeToCart() {
+  const r = recipes.find(x => x.id === currentModalId); if (!r) return;
+  const f = servingsFactor(r); let n = 0;
+  r.ingredients.forEach(i => { if (pushEntry(r, i, f)) n++; });
+  saveCart();
+  if (n) showToast(`«${r.title}» (${modalServings} порц.): добавлено ${n} ингр.`); else showToast("Этот рецепт уже в корзине", "error");
+}
+function openShoppingList() { renderCart(); document.getElementById('shopModal').classList.add('open'); }
+function renderCart() {
+  const list = document.getElementById('shopList'), chips = document.getElementById('cartRecipes');
+  const seen = new Map(); cart.items.forEach(it => seen.set(it.rid, it.title));
+  chips.innerHTML = [...seen].filter(([id]) => id).map(([id, t]) => `<span class="chip">${esc(t)}<button data-rm-recipe="${id}" aria-label="Убрать рецепт">✕</button></span>`).join('');
+  const items = mergedCart();
+  if (!items.length) { list.innerHTML = '<div style="text-align:center; color:var(--muted); padding:20px;">Корзина пуста 🍽️</div>'; return; }
+  list.innerHTML = items.map(g => {
+    const done = cart.done.includes(g.key);
+    const amt = g.qty != null ? formatQty(g.qty, g.unit) : g.amount;
+    return `<li class="ingr-item cart-item ${done ? 'done' : ''}"><label><input type="checkbox" data-done="${esc(g.key)}" ${done ? 'checked' : ''}><span class="ing-name">${esc(g.name)}<small>${esc(g.recipes.join(', '))}</small></span></label><span class="ing-amt">${esc(amt)}</span><button class="add-to-cart" style="background:#ffe3e3; color:#d63031;" data-remove-key="${esc(g.key)}" aria-label="Удалить">✕</button></li>`;
+  }).join('');
+}
+function clearBought() { cart.items = cart.items.filter(it => !cart.done.includes(keyOf(it))); cart.done = []; saveCart(); renderCart(); }
+function clearShoppingList() { cart = { items: [], done: [] }; saveCart(); renderCart(); }
+async function copyCart() {
+  const text = mergedCart().map(g => `${cart.done.includes(g.key) ? '☑' : '☐'} ${g.name} — ${g.qty != null ? formatQty(g.qty, g.unit) : g.amount}`).join('\n');
+  if (!text) return showToast("Корзина пуста", "error");
+  try { await navigator.clipboard.writeText(text); showToast("Список скопирован"); } catch (e) { showToast("Не удалось скопировать", "error"); }
 }
 updateShopBadge();
 
-function addToShoppingList(ingredient, recipeTitle) {
-  const itemText = `${ingredient} (${recipeTitle})`;
-  if (!shoppingList.includes(itemText)) {
-    shoppingList.push(itemText); localStorage.setItem('recipe_shop_list', JSON.stringify(shoppingList));
-    updateShopBadge(); showToast("Добавлено в список покупок");
-  } else { showToast("Уже в списке!", "error"); }
+/* --- ПОРЦИИ --- */
+let modalServings = 1;
+function renderIngredients(r) {
+  const f = servingsFactor(r);
+  document.getElementById("mServNum").textContent = modalServings;
+  document.getElementById("mIngr").innerHTML = r.ingredients.map((i, idx) => {
+    const { name, amount } = splitIngredient(i);
+    return `<li class="ingr-item"><span class="ing-name">${esc(name)}</span><span class="ing-amt">${esc(scaleText(amount, f))}</span><button class="add-to-cart" data-add="${idx}" aria-label="Добавить в корзину">+</button></li>`;
+  }).join("");
 }
-function openShoppingList() {
-  const modal = document.getElementById('shopModal');
-  const list = document.getElementById('shopList');
-  if (shoppingList.length === 0) { list.innerHTML = '<div style="text-align:center; color:var(--muted); padding:20px;">Список пуст 🍽️</div>'; }
-  else {
-    list.innerHTML = shoppingList.map((item, i) => `<li class="ingr-item"><span>${item}</span><button class="add-to-cart" style="background:#ffe3e3; color:#d63031;" onclick="removeFromShop(${i})">✕</button></li>`).join('');
-  }
-  modal.classList.add('open');
+function changeServings(d) {
+  const r = recipes.find(x => x.id === currentModalId); if (!r) return;
+  modalServings = Math.min(24, Math.max(1, modalServings + d)); renderIngredients(r);
 }
-function removeFromShop(index) {
-  shoppingList.splice(index, 1); localStorage.setItem('recipe_shop_list', JSON.stringify(shoppingList));
-  updateShopBadge(); openShoppingList();
+function openRandom() { openModal(recipes[Math.floor(Math.random() * recipes.length)].id); }
+
+/* --- ТАЙМЕР В РЕЖИМЕ ГОТОВКИ --- */
+let timerInt = null, timerLeft = 0;
+function detectMinutes(t) { const m = t.match(/(\d+)(?:[–-](\d+))?\s*мин[а-яё]*/); return m ? parseInt(m[2] || m[1]) : 0; }
+function stopTimer() { clearInterval(timerInt); timerInt = null; }
+function setupTimerForStep(text) {
+  stopTimer();
+  const mins = detectMinutes(text), box = document.getElementById('cookTimerBox');
+  box.innerHTML = mins ? `<button class="btn-secondary" onclick="startTimer(${mins})">⏱ Запустить таймер на ${mins} мин</button>` : '';
 }
-function clearShoppingList() {
-  shoppingList = []; localStorage.setItem('recipe_shop_list', JSON.stringify(shoppingList));
-  updateShopBadge(); openShoppingList();
+let audioCtx = null;
+function unlockAudio() { // создаём звук по клику, иначе браузер заблокирует его позже
+  try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) {}
+}
+function beep() {
+  try {
+    unlockAudio(); const c = audioCtx; if (!c) throw 0;
+    const master = c.createGain(); master.gain.value = 0.22; master.connect(c.destination);
+    const echo = c.createDelay(); echo.delayTime.value = 0.25;
+    const fb = c.createGain(); fb.gain.value = 0.3;
+    master.connect(echo); echo.connect(fb); fb.connect(echo); echo.connect(c.destination);
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // До–Ми–Соль–До
+    const t0 = c.currentTime + 0.05;
+    for (let rep = 0; rep < 2; rep++) notes.forEach((f, i) => {
+      const st = t0 + rep * 1.5 + i * 0.2;
+      [[1, 1], [2, 0.18]].forEach(([h, amp]) => {
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine'; o.frequency.value = f * h;
+        g.gain.setValueAtTime(0.0001, st);
+        g.gain.linearRampToValueAtTime(amp, st + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, st + 1.2);
+        o.connect(g); g.connect(master); o.start(st); o.stop(st + 1.3);
+      });
+    });
+  } catch (e) {}
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+}
+function startTimer(mins) {
+  stopTimer(); unlockAudio(); timerLeft = mins * 60;
+  const box = document.getElementById('cookTimerBox');
+  const draw = () => { box.innerHTML = `<div class="timer-display">${String(Math.floor(timerLeft / 60)).padStart(2, '0')}:${String(timerLeft % 60).padStart(2, '0')}</div><button class="btn-secondary" onclick="setupTimerForStep(cookSteps[currentStepIndex])">Стоп</button>`; };
+  draw();
+  timerInt = setInterval(() => {
+    timerLeft--;
+    if (timerLeft <= 0) { stopTimer(); beep(); box.innerHTML = '<div class="timer-display">⏰ Время!</div>'; showToast("Таймер сработал!"); }
+    else draw();
+  }, 1000);
 }
 
 /* --- РЕЖИМ ГОТОВКИ --- */
 let cookSteps = [], currentStepIndex = 0;
+let wakeLock = null;
+async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} }
+function releaseWakeLock() { if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; } }
 function startCooking() {
   const r = recipes.find(x => x.id === currentModalId); if (!r) return;
   cookSteps = r.steps; currentStepIndex = 0;
   document.getElementById('cookTitle').textContent = r.title;
   closeModal(); updateCookingUI();
   document.getElementById('cooking-mode').style.display = 'flex';
+  requestWakeLock();
 }
 function updateCookingUI() {
   document.getElementById('cookText').textContent = cookSteps[currentStepIndex];
+  setupTimerForStep(cookSteps[currentStepIndex]);
   document.getElementById('cookProgress').textContent = `Шаг ${currentStepIndex + 1} из ${cookSteps.length}`;
 }
 function nextStep() { if (currentStepIndex < cookSteps.length - 1) { currentStepIndex++; updateCookingUI(); } else { closeCooking(); showToast("Приятного аппетита! 🍽️"); } }
 function prevStep() { if (currentStepIndex > 0) { currentStepIndex--; updateCookingUI(); } }
-function closeCooking() { document.getElementById('cooking-mode').style.display = 'none'; }
+function closeCooking() { document.getElementById('cooking-mode').style.display = 'none'; releaseWakeLock(); stopTimer(); }
 
 /* --- ИЗБРАННОЕ --- */
 let favorites = JSON.parse(localStorage.getItem("recipe_favorites") || "[]");
@@ -644,7 +1014,7 @@ const categories = ["Все", ...new Set(recipes.map(r => r.category))];
 function renderFilters() {
   const allBtns = categories.map(cat => `<button class="filter-btn ${cat === currentFilter ? "active" : ""}" data-cat="${cat}">${cat}</button>`).join("");
   const favBtn = `<button class="filter-btn ${currentFilter === "Избранное" ? "active" : ""}" data-cat="Избранное">❤️ Избранное</button>`;
-  document.getElementById("filters").innerHTML = allBtns + favBtn;
+  document.getElementById("filters").innerHTML = allBtns + favBtn + '<button class="rand-btn" onclick="openRandom()">🎲 Случайный</button>';
   document.querySelectorAll(".filter-btn").forEach(btn => { btn.onclick = () => { currentFilter = btn.dataset.cat; renderFilters(); renderGrid(); }; });
 }
 
@@ -671,6 +1041,7 @@ function renderGrid() {
   const sortMethod = document.getElementById('sortSelect').value;
   if (sortMethod === 'time') filtered.sort((a, b) => parseFloat(a.time) * (a.time.includes('ч') ? 60 : 1) - parseFloat(b.time) * (b.time.includes('ч') ? 60 : 1));
   else if (sortMethod === 'calories') filtered.sort((a, b) => a.calories - b.calories);
+  else if (sortMethod === 'rating') filtered.sort((a, b) => (ratings[b.id] || 0) - (ratings[a.id] || 0));
   else if (sortMethod === 'title') filtered.sort((a, b) => a.title.localeCompare(b.title));
 
   if (filtered.length === 0) {
@@ -679,17 +1050,17 @@ function renderGrid() {
   }
 
   grid.innerHTML = filtered.map(r => {
-    const displayImg = customImages[r.id] || r.img;
+    const displayImg = customImages[r.id] || r.img || FALLBACK_IMG;
     return `
-    <div class="card" onclick="openModal(${r.id})">
+    <div class="card" data-id="${r.id}" tabindex="0" role="button" aria-label="${esc(r.title)}">
       <div class="card-image">
-        <img src="${displayImg}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'">
-        <button class="fav-btn ${isFav(r.id) ? "active" : ""}" onclick="event.stopPropagation();toggleFav(${r.id})">${isFav(r.id) ? "❤️" : "🤍"}</button>
+        <img src="${esc(displayImg)}" alt="${esc(r.title)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_IMG">
+        <button class="fav-btn ${isFav(r.id) ? "active" : ""}" data-fav="${r.id}" aria-label="В избранное">${isFav(r.id) ? "❤️" : "🤍"}</button>
       </div>
       <div class="card-body">
         <div class="badge-row">
           <span class="badge">${r.category}</span>
-          <span class="badge cal">🔥 ${r.calories} ккал</span>
+          <span class="badge cal">🔥 ${r.calories} ккал</span>${ratings[r.id] ? `<span class="badge">⭐ ${ratings[r.id]}</span>` : ""}
         </div>
         <div class="card-title">${r.title}</div>
         <div class="card-desc">${r.desc}</div>
@@ -705,18 +1076,21 @@ function renderGrid() {
 function openModal(id) {
   const r = recipes.find(x => x.id === id); if (!r) return;
   currentModalId = id;
-  const displayImg = customImages[r.id] || r.img;
+  const displayImg = customImages[r.id] || r.img || FALLBACK_IMG;
   
-  document.getElementById("mImg").src = displayImg;
+  const mImg = document.getElementById("mImg");
+  mImg.onerror = () => { mImg.onerror = null; mImg.src = FALLBACK_IMG; };
+  mImg.alt = r.title;
+  mImg.src = displayImg;
   document.getElementById("mTitle").textContent = r.title;
   document.getElementById("mDesc").textContent = r.desc;
   document.getElementById("mTime").textContent = r.time;
   document.getElementById("mWeight").textContent = r.weight;
   document.getElementById("mDiff").textContent = r.difficulty;
   document.getElementById("mCal").textContent = r.calories;
-  document.getElementById("mServings").textContent = r.servings ? `(порций: ${r.servings})` : "";
+  modalServings = parseInt(r.servings) || 1;
   
-  document.getElementById("mIngr").innerHTML = r.ingredients.map(i => `<li class="ingr-item"><span>${i}</span><button class="add-to-cart" onclick="addToShoppingList('${i.replace(/'/g, "\\'")}', '${r.title}')">+</button></li>`).join("");
+  renderIngredients(r);
   document.getElementById("mEquip").innerHTML = (r.equipment || []).map(e => `<li class="equip-item">🔹 ${e}</li>`).join("");
   document.getElementById("mSteps").innerHTML = r.steps.map(s => `<li class="step-item">${s}</li>`).join("");
 
@@ -728,13 +1102,63 @@ function openModal(id) {
   mBtn.dataset.id = id; mBtn.textContent = isFav(id) ? "❤️" : "🤍";
 
   document.getElementById("modal").classList.add("open");
+  renderRating(id);
+  document.querySelector("#modal .modal").scrollTop = 0;
   document.body.style.overflow = "hidden";
 }
 function closeModal() { document.getElementById("modal").classList.remove("open"); document.body.style.overflow = ""; currentModalId = null; }
 document.getElementById("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
 document.getElementById("shopModal").addEventListener("click", e => { if (e.target.id === "shopModal") e.target.classList.remove("open"); });
-document.getElementById("searchInput").addEventListener("input", e => { searchQuery = e.target.value; renderGrid(); });
-document.getElementById("ingredientInput").addEventListener("input", e => { ingredientQuery = e.target.value; renderGrid(); });
+document.getElementById("searchInput").addEventListener("input", debounce(e => { searchQuery = e.target.value; renderGrid(); }));
+document.getElementById("ingredientInput").addEventListener("input", debounce(e => { ingredientQuery = e.target.value; renderGrid(); }));
+
+/* --- ДЕЛЕГИРОВАНИЕ СОБЫТИЙ --- */
+grid.addEventListener("click", e => {
+  const fav = e.target.closest("[data-fav]");
+  if (fav) { e.stopPropagation(); toggleFav(Number(fav.dataset.fav)); return; }
+  const card = e.target.closest(".card");
+  if (card) openModal(Number(card.dataset.id));
+});
+grid.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("card")) {
+    e.preventDefault(); openModal(Number(e.target.dataset.id));
+  }
+});
+document.getElementById("mIngr").addEventListener("click", e => {
+  const btn = e.target.closest("[data-add]"); if (!btn) return;
+  const r = recipes.find(x => x.id === currentModalId); if (!r) return;
+  addIngredientToCart(r, Number(btn.dataset.add));
+});
+document.getElementById("shopList").addEventListener("click", e => {
+  const btn = e.target.closest("[data-remove-key]"); if (!btn) return;
+  cart.items = cart.items.filter(it => keyOf(it) !== btn.dataset.removeKey);
+  cart.done = cart.done.filter(k => k !== btn.dataset.removeKey); saveCart(); renderCart();
+});
+document.getElementById("shopList").addEventListener("change", e => {
+  const cb = e.target.closest("[data-done]"); if (!cb) return;
+  const k = cb.dataset.done; cart.done = cb.checked ? [...cart.done, k] : cart.done.filter(x => x !== k);
+  saveCart(); renderCart();
+});
+document.getElementById("cartRecipes").addEventListener("click", e => {
+  const btn = e.target.closest("[data-rm-recipe]"); if (!btn) return;
+  cart.items = cart.items.filter(it => it.rid !== Number(btn.dataset.rmRecipe)); saveCart(); renderCart();
+});
+
+/* --- КЛАВИАТУРА --- */
+document.addEventListener("keydown", e => {
+  const cooking = document.getElementById("cooking-mode").style.display === "flex";
+  if (e.key === "Escape") {
+    if (cooking) closeCooking();
+    else if (document.getElementById("shopModal").classList.contains("open")) document.getElementById("shopModal").classList.remove("open");
+    else if (document.getElementById("modal").classList.contains("open")) closeModal();
+  } else if (cooking) {
+    if (e.key === "ArrowRight") nextStep();
+    else if (e.key === "ArrowLeft") prevStep();
+  }
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && document.getElementById("cooking-mode").style.display === "flex") requestWakeLock();
+});
 
 /* --- АДМИНКА --- */
 const ADMIN_PASSWORD = "mikerecept6752";
@@ -758,8 +1182,12 @@ function updateAdminUI() {
 
 async function handleImageUpload(event) {
   if (!isAdmin) return showToast("Нет прав!", "error");
+  if (!supabaseClient) return showToast("Облако недоступно", "error");
   const file = event.target.files[0];
   if (!file || !currentModalId) return;
+  if (!file.type.startsWith("image/")) return showToast("Выберите изображение", "error");
+  if (file.size > 15 * 1024 * 1024) return showToast("Файл слишком большой (макс. 15 МБ)", "error");
+  const recipeId = currentModalId;
 
   showToast("Загрузка фото...");
   const reader = new FileReader();
@@ -776,27 +1204,150 @@ async function handleImageUpload(event) {
       const response = await fetch(base64);
       const blob = await response.blob();
 
-      const fileName = `recipe_${currentModalId}_${Date.now()}.jpg`;
+      const fileName = `recipe_${recipeId}_${Date.now()}.jpg`;
       const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('recipes').upload(fileName, blob);
       if (uploadError) return showToast("Ошибка загрузки: " + uploadError.message, "error");
 
       const { data: urlData } = supabaseClient.storage.from('recipes').getPublicUrl(fileName);
-      const { error: dbError } = await supabaseClient.from('custom_images').upsert({ recipe_id: currentModalId, image_url: urlData.publicUrl }, { onConflict: 'recipe_id' });
+      const { error: dbError } = await supabaseClient.from('custom_images').upsert({ recipe_id: recipeId, image_url: urlData.publicUrl }, { onConflict: 'recipe_id' });
 
       if (dbError) return showToast("Ошибка базы: " + dbError.message, "error");
       showToast("Фото обновлено!"); loadImagesFromCloud();
     };
+    img.onerror = () => showToast("Не удалось прочитать изображение", "error");
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
 
 async function resetImage() {
-  if (!isAdmin || !currentModalId) return;
+  if (!isAdmin || !currentModalId || !supabaseClient) return;
   if (!confirm("Вернуть стандартное фото?")) return;
   const { error } = await supabaseClient.from('custom_images').delete().eq('recipe_id', currentModalId);
   if (error) return showToast("Ошибка удаления", "error");
   showToast("Фото сброшено!"); loadImagesFromCloud();
+}
+
+/* --- ОЦЕНКИ, РЕЦЕПТ ДНЯ, ПОДЕЛИТЬСЯ --- */
+function renderRating(id) {
+  const cur = ratings[id] || 0;
+  document.getElementById("mRating").innerHTML = [1, 2, 3, 4, 5].map(n => `<button class="star ${n <= cur ? "on" : ""}" data-star="${n}" aria-label="Оценка ${n}">★</button>`).join("");
+}
+document.getElementById("mRating").addEventListener("click", e => {
+  const b = e.target.closest("[data-star]"); if (!b || !currentModalId) return;
+  const n = Number(b.dataset.star);
+  if (ratings[currentModalId] === n) delete ratings[currentModalId]; else ratings[currentModalId] = n;
+  localStorage.setItem("recipe_ratings", JSON.stringify(ratings));
+  renderRating(currentModalId); renderGrid();
+});
+function dayRecipe() {
+  const d = new Date(); const n = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
+  return recipes[n % recipes.length];
+}
+function openDayRecipe() { openModal(dayRecipe().id); }
+async function shareRecipe() {
+  const r = recipes.find(x => x.id === currentModalId); if (!r) return;
+  const f = servingsFactor(r);
+  const text = `${r.title}\n\nИнгредиенты (${modalServings} порц.):\n` +
+    r.ingredients.map(i => { const { name, amount } = splitIngredient(i); return `• ${name} — ${scaleText(amount, f)}`; }).join("\n") +
+    `\n\nПриготовление:\n` + r.steps.map((st, i) => `${i + 1}. ${st}`).join("\n");
+  try {
+    if (navigator.share) await navigator.share({ title: r.title, text });
+    else { await navigator.clipboard.writeText(text); showToast("Рецепт скопирован"); }
+  } catch (e) {}
+}
+document.getElementById("heroStats").textContent = `${recipes.length} рецептов · ${categories.length - 1} категорий · пересчёт порций, таймер и умная корзина`;
+document.getElementById("dayBtn").textContent = "✨ Рецепт дня: " + dayRecipe().title;
+
+/* --- ЧАТ МЕЖДУ ПОЛЬЗОВАТЕЛЯМИ (по ID) --- */
+let chatData = [], chatPeer = null, chatOpen = false, chatTimer = null;
+const ID_RE = /^user_[a-z0-9]{3,20}$/;
+document.getElementById('chatMyId').textContent = userId;
+document.getElementById('chatRecipe').innerHTML = '<option value="">📎 Рецепт</option>' + recipes.map(r => `<option value="${r.id}">${esc(r.title)}</option>`).join('');
+function chatPeers() {
+  const map = new Map();
+  chatData.forEach(m => {
+    const peer = m.sender === userId ? m.recipient : m.sender;
+    const c = map.get(peer) || { peer, last: m, unread: 0 };
+    c.last = m; if (m.recipient === userId && !m.read) c.unread++; map.set(peer, c);
+  });
+  return [...map.values()].sort((a, b) => new Date(b.last.created_at) - new Date(a.last.created_at));
+}
+function updateChatBadge() {
+  const n = chatData.filter(m => m.recipient === userId && !m.read).length, b = document.getElementById('chatBadge');
+  b.style.display = n ? 'flex' : 'none'; b.textContent = n;
+}
+async function loadChat(silent) {
+  if (!supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient.from('messages').select('*').or(`sender.eq.${userId},recipient.eq.${userId}`).order('created_at', { ascending: true }).limit(500);
+    if (error) throw error;
+    const before = chatData.length; chatData = data || [];
+    if (before && chatData.length > before && !chatOpen) {
+      const m = chatData[chatData.length - 1];
+      if (m.recipient === userId) showToast('Новое сообщение от ' + esc(m.sender));
+    }
+    updateChatBadge();
+    if (chatOpen && (chatData.length !== before || !silent)) renderChat();
+  } catch (e) { if (!silent) showToast('Чат недоступен: выполните chat_setup.sql в Supabase', 'error'); }
+}
+function renderChat() {
+  document.getElementById('chatList').style.display = chatPeer ? 'none' : 'block';
+  document.getElementById('chatThread').style.display = chatPeer ? 'block' : 'none';
+  if (!chatPeer) {
+    const ps = chatPeers();
+    document.getElementById('chatConvs').innerHTML = ps.length ? ps.map(c => `<li class="ingr-item conv-item" data-peer="${esc(c.peer)}"><span class="ing-name">${esc(c.peer)}<small style="display:block;font-size:12px;color:var(--muted)">${esc((c.last.body || '📎 Рецепт').slice(0, 40))}</small></span>${c.unread ? `<span class="unread">${c.unread}</span>` : ''}</li>`).join('') : '<div style="text-align:center;color:var(--muted);padding:16px">Пока нет диалогов. Введите ID друга выше.</div>';
+    return;
+  }
+  document.getElementById('chatPeerName').textContent = chatPeer;
+  const box = document.getElementById('chatMsgs');
+  box.innerHTML = chatData.filter(m => m.sender === chatPeer || m.recipient === chatPeer).map(m => {
+    const r = m.recipe_id ? recipes.find(x => x.id === m.recipe_id) : null;
+    return `<div class="msg ${m.sender === userId ? 'me' : 'them'}">${esc(m.body)}${r ? `<div><span class="recipe-link" data-recipe="${r.id}">🍽️ ${esc(r.title)}</span></div>` : ''}<time>${new Date(m.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</time></div>`;
+  }).join('') || '<div style="text-align:center;color:var(--muted)">Напишите первое сообщение 👋</div>';
+  box.scrollTop = box.scrollHeight;
+  markRead();
+}
+async function markRead() {
+  const ids = chatData.filter(m => m.recipient === userId && m.sender === chatPeer && !m.read).map(m => m.id);
+  if (!ids.length) return;
+  chatData.forEach(m => { if (ids.includes(m.id)) m.read = true; }); updateChatBadge();
+  try { await supabaseClient.from('messages').update({ read: true }).in('id', ids); } catch (e) {}
+}
+function schedulePoll() { clearInterval(chatTimer); chatTimer = setInterval(() => loadChat(true), chatOpen ? 4000 : 30000); }
+function openChat() {
+  if (!supabaseClient) return showToast('Облако недоступно', 'error');
+  chatOpen = true; chatPeer = null;
+  document.getElementById('chatModal').classList.add('open');
+  loadChat(false); schedulePoll();
+}
+function closeChat() { chatOpen = false; document.getElementById('chatModal').classList.remove('open'); schedulePoll(); }
+function backToList() { chatPeer = null; renderChat(); }
+function startChat() {
+  const id = document.getElementById('chatPeerInput').value.trim().toLowerCase();
+  if (!ID_RE.test(id)) return showToast('Неверный ID. Он выглядит так: user_k2j4h5g1', 'error');
+  if (id === userId) return showToast('Это ваш собственный ID', 'error');
+  chatPeer = id; document.getElementById('chatPeerInput').value = ''; renderChat();
+}
+async function sendChat() {
+  const input = document.getElementById('chatInput'), sel = document.getElementById('chatRecipe');
+  const body = input.value.trim(), recipe = sel.value ? Number(sel.value) : null;
+  if (!chatPeer || (!body && !recipe)) return;
+  input.value = ''; sel.value = '';
+  const { error } = await supabaseClient.from('messages').insert({ sender: userId, recipient: chatPeer, body, recipe_id: recipe });
+  if (error) return showToast('Не отправлено: ' + esc(error.message), 'error');
+  loadChat(false);
+}
+async function copyMyId() { try { await navigator.clipboard.writeText(userId); showToast('ID скопирован'); } catch (e) { showToast('Не удалось скопировать', 'error'); } }
+document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
+document.getElementById('chatPeerInput').addEventListener('keydown', e => { if (e.key === 'Enter') startChat(); });
+document.getElementById('chatConvs').addEventListener('click', e => { const li = e.target.closest('[data-peer]'); if (li) { chatPeer = li.dataset.peer; renderChat(); } });
+document.getElementById('chatMsgs').addEventListener('click', e => { const l = e.target.closest('[data-recipe]'); if (l) { closeChat(); openModal(Number(l.dataset.recipe)); } });
+document.getElementById('chatModal').addEventListener('click', e => { if (e.target.id === 'chatModal') closeChat(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatOpen) closeChat(); });
+if (supabaseClient) {
+  loadChat(true); schedulePoll();
+  try { supabaseClient.channel('messages-live').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => loadChat(true)).subscribe(); } catch (e) {}
 }
 
 // Старт
