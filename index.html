@@ -673,6 +673,8 @@ html[data-theme="brutal"] .recipe-link{background:#fff;color:#111;border:2px sol
   .cook-timer{gap:10px;}
   .timer-presets button{padding:6px 10px;font-size:11px;}
 }
+  .timer-display.ringing{animation:timerPulse 1s ease-in-out infinite}
+@keyframes timerPulse{50%{transform:scale(1.08)}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1582,21 +1584,21 @@ async function saveNickname() {
     return;
   }
 
+  let saveWarning = result.warning || '';
+  try {
+    await chatReady();
+    const { error } = await chatClient.from('profiles').upsert({ user_id: userId, nickname: nick, updated_at: new Date().toISOString() });
+    if (error) {
+      if (error.code === '23505') { msg.textContent = '❌ Этот никнейм уже занят другим пользователем'; msg.className = 'nickname-msg error'; return; }
+      throw error;
+    }
+  } catch (e) { console.warn('Save nickname error:', e); saveWarning = 'не сохранён в облаке: ' + chatErrorHint(e); }
+
   nickname = nick;
   localStorage.setItem('recipe_nickname', nickname);
   updateHeaderDisplay();
 
-  if (supabaseClient) {
-    try {
-      await supabaseClient.from('profiles').upsert({
-        user_id: userId,
-        nickname: nick,
-        updated_at: new Date().toISOString()
-      });
-    } catch(e){ console.warn('Save nickname error:', e); }
-  }
-
-  msg.textContent = '✅ Никнейм сохранён' + (result.warning ? ' (' + result.warning + ')' : '');
+  msg.textContent = '✅ Никнейм сохранён' + (saveWarning ? ' (' + saveWarning + ')' : '');
   msg.className = 'nickname-msg success';
   toast('Никнейм обновлён: ' + nick);
   setTimeout(closeProfile, 900);
@@ -1609,6 +1611,31 @@ let chatPeerId = null;
 let chatChannel = null;
 let chatRecipeSelectedId = null;
 const nicknameCache = {};
+
+let chatReadyP = null;
+function chatReady() { // анонимный вход + привязка вашего ID к аккаунту (нужно для приватности)
+  if (!chatClient) return Promise.reject(new Error('Supabase недоступен'));
+  if (!chatReadyP) chatReadyP = (async () => {
+    const { data: { session } } = await chatClient.auth.getSession();
+    if (!session) { const { error } = await chatClient.auth.signInAnonymously(); if (error) throw error; }
+    let { error } = await chatClient.from('chat_users').upsert({ user_id: userId }, { onConflict: 'uid' });
+    if (error && error.code === '23505') { // такой ID уже занят другим аккаунтом — выдаём новый
+      userId = 'user_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('recipe_user_id', userId);
+      updateHeaderDisplay();
+      ({ error } = await chatClient.from('chat_users').upsert({ user_id: userId }, { onConflict: 'uid' }));
+      if (!error) toast('Ваш ID обновлён: ' + userId);
+    }
+    if (error) throw error;
+  })().catch(e => { chatReadyP = null; throw e; });
+  return chatReadyP;
+}
+function chatErrorHint(e) {
+  const m = (e && (e.message || e.error_description)) || String(e);
+  if (/anonymous|signups? not allowed|disabled/i.test(m)) return 'Включите Anonymous sign-ins в Supabase (Authentication → Sign In / Providers).';
+  if (/relation|does not exist|schema cache|column|42P01|PGRST|function/i.test(m)) return 'Выполните chat_setup.sql в Supabase (SQL Editor).';
+  return m;
+}
 
 async function getNickname(uid) {
   if (uid === userId) return getDisplayName();
@@ -1649,6 +1676,12 @@ async function startChat() {
       if (data?.user_id) targetId = data.user_id;
     } catch(e){}
   }
+  try {
+    await chatReady();
+    const { data: exists, error } = await chatClient.rpc('chat_user_exists', { h: targetId });
+    if (error) throw error;
+    if (!exists) { toast('Пользователь не найден. Пусть друг откроет чат хотя бы раз.', 'error'); return; }
+  } catch (e) { toast('Чат недоступен: ' + chatErrorHint(e), 'error'); return; }
   input.value = '';
   openThread(targetId);
 }
@@ -1676,6 +1709,7 @@ function backToList() {
 async function loadMessages() {
   if (!chatClient || !chatPeerId) return;
   try {
+    await chatReady();
     const { data, error } = await chatClient
       .from('messages')
       .select('*')
@@ -1684,9 +1718,11 @@ async function loadMessages() {
       .limit(200);
     if (error) throw error;
     renderMessages(data || []);
+    const unread = (data || []).filter(m => m.recipient_id === userId && m.sender_id === chatPeerId && !m.read_at).map(m => m.id);
+    if (unread.length) chatClient.from('messages').update({ read_at: new Date().toISOString() }).in('id', unread).then(() => {});
   } catch (e) {
     console.warn('loadMessages error:', e);
-    document.getElementById('chatMsgs').innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px;">Не удалось загрузить сообщения</div>';
+    document.getElementById('chatMsgs').innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px;">Не удалось загрузить сообщения<br><small>' + esc(chatErrorHint(e)) + '</small></div>';
   }
 }
 
@@ -1736,18 +1772,20 @@ async function sendChat() {
   if (!text && !recipeId) return;
   if (!chatClient) { toast('Чат недоступен', 'error'); return; }
   try {
-    await chatClient.from('messages').insert({
+    await chatReady();
+    const { error } = await chatClient.from('messages').insert({
       sender_id: userId,
       recipient_id: chatPeerId,
       content: text,
       recipe_id: recipeId
     });
+    if (error) throw error;
     input.value = '';
     clearRecipeSelection();
     await loadMessages();
   } catch (e) {
     console.error(e);
-    toast('Ошибка отправки', 'error');
+    toast('Не отправлено: ' + chatErrorHint(e), 'error');
   }
 }
 
@@ -1758,6 +1796,7 @@ async function renderConversations() {
     return;
   }
   try {
+    await chatReady();
     const { data, error } = await chatClient
       .from('messages')
       .select('*')
@@ -1787,7 +1826,7 @@ async function renderConversations() {
     convs.innerHTML = items.join('') || '<li style="opacity:.5;text-align:center;padding:15px;font-size:13px;">Пока нет переписок</li>';
   } catch(e) {
     console.warn(e);
-    convs.innerHTML = '<li style="opacity:.5;text-align:center;padding:15px">Не удалось загрузить</li>';
+    convs.innerHTML = '<li style="opacity:.6;text-align:center;padding:15px;font-size:13px;">Не удалось загрузить чат<br><small>' + esc(chatErrorHint(e)) + '</small></li>';
   }
 }
 
@@ -1851,26 +1890,50 @@ let recentlyViewed = JSON.parse(localStorage.getItem('recipe_recent') || '[]');
 
 /* --- ТАЙМЕР --- */
 let timerInterval = null;
+let alarmInterval = null;
+let timerEnd = 0;
 let timerRemaining = 0;
 let timerTotal = 0;
 let audioCtx = null;
+let audioOut = null;
 
-function playBeep() {
+function unlockAudio() { // «будим» звук по клику, иначе браузер заблокирует его позже
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const now = audioCtx.currentTime;
-    [0, 0.35, 0.7].forEach((offset, i) => {
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.connect(g); g.connect(audioCtx.destination);
-      o.frequency.value = i === 2 ? 1320 : 880;
-      o.type = 'sine';
-      g.gain.setValueAtTime(0.25, now + offset);
-      g.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.28);
-      o.start(now + offset);
-      o.stop(now + offset + 0.3);
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch(e){}
+}
+function getAudioOut() { // один общий выход с мягким эхом
+  if (audioOut) return audioOut;
+  const c = audioCtx;
+  const master = c.createGain(); master.gain.value = 0.28; master.connect(c.destination);
+  const echo = c.createDelay(); echo.delayTime.value = 0.28;
+  const fb = c.createGain(); fb.gain.value = 0.32;
+  master.connect(echo); echo.connect(fb); fb.connect(echo); echo.connect(c.destination);
+  audioOut = master;
+  return audioOut;
+}
+function playChime() {
+  try {
+    unlockAudio();
+    const c = audioCtx, out = getAudioOut(), t0 = c.currentTime + 0.05;
+    // мелодия: До – Ми – Соль – До (октавой выше) – Соль – Ми – До
+    const melody = [[523.25, 0], [659.25, .22], [783.99, .44], [1046.5, .66], [783.99, 1.05], [659.25, 1.27], [523.25, 1.49]];
+    melody.forEach(([f, dt], i) => {
+      const st = t0 + dt, dur = (i === 3 || i === 6) ? 1.1 : 0.7;
+      [[1, 1], [2, .15], [3, .05]].forEach(([h, amp]) => {
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = h === 1 ? 'triangle' : 'sine';
+        o.frequency.value = f * h;
+        g.gain.setValueAtTime(0.0001, st);
+        g.gain.linearRampToValueAtTime(amp, st + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, st + dur);
+        o.connect(g); g.connect(out);
+        o.start(st); o.stop(st + dur + 0.05);
+      });
     });
   } catch(e){}
+  if (navigator.vibrate) navigator.vibrate([250, 120, 250]);
 }
 
 function updateTimerDisplay() {
@@ -1879,40 +1942,47 @@ function updateTimerDisplay() {
   const m = Math.floor(timerRemaining / 60);
   const s = timerRemaining % 60;
   el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  el.classList.toggle('ringing', !!alarmInterval);
   if (timerRemaining <= 10 && timerRemaining > 0) el.style.color = '#ff4757';
   else if (timerRemaining === 0 && timerTotal > 0) el.style.color = 'var(--secondary)';
   else el.style.color = 'var(--primary)';
 }
 
+function tickTimer() {
+  timerRemaining = Math.max(0, Math.ceil((timerEnd - Date.now()) / 1000));
+  updateTimerDisplay();
+  if (timerRemaining <= 0) {
+    clearInterval(timerInterval); timerInterval = null;
+    startAlarm();
+  }
+}
 function startTimer(seconds) {
   stopTimer();
+  unlockAudio();
   timerTotal = seconds;
   timerRemaining = seconds;
-  // звук нужно «разбудить» по клику, иначе браузер заблокирует его позже
-  try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch(e){}
+  timerEnd = Date.now() + seconds * 1000;
   updateTimerDisplay();
   const stopBtn = document.getElementById('timerStopBtn');
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
-  timerInterval = setInterval(() => {
-    timerRemaining--;
-    updateTimerDisplay();
-    if (timerRemaining <= 0) {
-      clearInterval(timerInterval); timerInterval = null;
-      playBeep();
-      setTimeout(playBeep, 1200);
-      toast('⏰ Время вышло!');
-      if (stopBtn) stopBtn.style.display = 'none';
-    }
-  }, 1000);
+  if (stopBtn) { stopBtn.textContent = '⏹ Остановить'; stopBtn.style.display = 'inline-flex'; }
+  timerInterval = setInterval(tickTimer, 250);
 }
-
+function startAlarm() { // играет, пока пользователь не нажмёт «Остановить»
+  playChime();
+  alarmInterval = setInterval(playChime, 3600);
+  updateTimerDisplay();
+  const stopBtn = document.getElementById('timerStopBtn');
+  if (stopBtn) { stopBtn.textContent = '⏹ Выключить сигнал'; stopBtn.style.display = 'inline-flex'; }
+  toast('⏰ Время вышло!');
+}
 function stopTimer() {
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  if (alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; }
   timerRemaining = 0;
   timerTotal = 0;
   updateTimerDisplay();
   const btn = document.getElementById('timerStopBtn');
-  if (btn) btn.style.display = 'none';
+  if (btn) { btn.style.display = 'none'; btn.textContent = '⏹ Остановить'; }
 }
 
 /* --- ЗАМЕТКИ --- */
