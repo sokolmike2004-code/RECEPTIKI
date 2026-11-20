@@ -596,7 +596,10 @@ html[data-theme="brutal"] .recipe-link{background:#fff;color:#111;border:2px sol
   .cook-step-text{font-size:24px;}
   .cook-nav{flex-direction:column;}
   .cook-nav button{max-width:100%;}
-  .user-id-badge{display:none;}
+  .user-id-badge{display:flex!important;max-width:88px;font-size:11px;padding:5px 8px;gap:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;}
+  .logo{font-size:16px;}
+  .header-controls{gap:6px;}
+  .icon-btn{width:36px;height:36px;font-size:15px;}
   .hero{padding:0 12px;}.hero-inner{padding:28px 20px;}
   .filters{flex-wrap:nowrap;overflow-x:auto;padding:0 4px 8px 0;scrollbar-width:none;}
   .filter-btn,.rand-btn{white-space:nowrap;flex-shrink:0;}
@@ -613,6 +616,62 @@ html[data-theme="brutal"] .recipe-link{background:#fff;color:#111;border:2px sol
   .chat-send .btn-primary{width:100%;height:48px;}
   .chat-new{flex-wrap:wrap;}
   .chat-new input{width:100%;}
+}
+/* ===== ТАЙМЕР ===== */
+.cook-timer{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:20px;}
+.timer-presets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.timer-presets button{
+  padding:8px 14px;border:var(--border-w) solid var(--border);background:var(--card);
+  color:var(--text);border-radius:20px;cursor:pointer;font-weight:700;font-size:13px;
+  font-family:var(--font);transition:all .15s;box-shadow:var(--btn-shadow);
+}
+.timer-presets button:hover{background:var(--primary);color:#fff;transform:var(--btn-translate);}
+.timer-display{
+  font-size:56px;font-weight:800;color:var(--primary);
+  font-variant-numeric:tabular-nums;letter-spacing:2px;
+  font-family:'Orbitron','Montserrat',monospace;transition:color .3s;
+}
+.timer-controls{display:flex;gap:10px;}
+
+/* ===== ЗАМЕТКИ ===== */
+.notes-area{
+  width:100%;min-height:100px;padding:14px;border:var(--border-w) solid var(--border);
+  border-radius:var(--radius-sm);background:var(--bg);color:var(--text);
+  font-family:var(--font);font-size:14px;resize:vertical;outline:none;
+  transition:border-color .15s;
+}
+.notes-area:focus{border-color:var(--primary);}
+.note-indicator{
+  position:absolute;top:12px;left:12px;width:30px;height:30px;
+  border-radius:50%;background:var(--badge-bg);color:var(--badge-text);
+  font-size:15px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);border:var(--border-w) solid var(--border);
+  z-index:2;
+}
+
+/* ===== COOKED ===== */
+.cooked-badge{
+  position:absolute;top:12px;right:56px;padding:3px 9px;border-radius:12px;
+  background:var(--secondary);color:#fff;font-size:11px;font-weight:800;
+  display:flex;align-items:center;gap:4px;border:var(--border-w) solid var(--border);
+  box-shadow:0 2px 6px rgba(0,0,0,.15);z-index:2;
+}
+.cooked-info{
+  background:var(--primary-light);padding:12px 16px;border-radius:var(--radius-sm);
+  margin-bottom:16px;font-size:14px;font-weight:600;color:var(--primary);
+  display:flex;align-items:center;gap:10px;border:var(--border-w) solid var(--border);
+  flex-wrap:wrap;
+}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 22px;}
+.modal-actions button{flex:1;min-width:130px;padding:11px 16px;font-size:13px;}
+
+@media (max-width:768px){
+  .timer-display{font-size:42px;}
+  .cooked-badge{top:5px;right:36px;font-size:9px;padding:2px 6px;}
+  .note-indicator{top:5px;left:5px;width:24px;height:24px;font-size:12px;}
+  .modal-actions button{min-width:100%;font-size:12px;}
+  .cook-timer{gap:10px;}
+  .timer-presets button{padding:6px 10px;font-size:11px;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -690,6 +749,14 @@ html[data-theme="brutal"] .recipe-link{background:#fff;color:#111;border:2px sol
         <div class="stat-box"><div class="stat-label">Ккал/100г</div><div class="stat-value" id="mCal"></div></div>
         <div class="stat-box"><div class="stat-label">Сложность</div><div class="stat-value" id="mDiff"></div></div>
       </div>
+
+      <div id="cookedInfo" class="cooked-info" style="display:none;"></div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="markCooked()">✅ Я приготовил!</button>
+        <button class="btn-secondary" onclick="printRecipe()">🖨️ Печать</button>
+        <button class="btn-secondary" onclick="copyRecipeText()">📋 Копировать</button>
+      </div>
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
         <h3>🧾 Ингредиенты <span class="serv-ctl"><button onclick="changeServings(-1)">−</button><b id="mServNum">2</b>порц.<button onclick="changeServings(1)">+</button></span></h3>
         <button class="btn-primary" onclick="startCooking()">👨‍🍳 Начать готовку</button>
@@ -700,6 +767,8 @@ html[data-theme="brutal"] .recipe-link{background:#fff;color:#111;border:2px sol
       <ul class="equip-grid" id="mEquip"></ul>
       <h3>📖 Приготовление</h3>
       <ol class="steps-list" id="mSteps"></ol>
+      <h3>📝 Мои заметки</h3>
+      <textarea class="notes-area" id="mNotes" placeholder="Личные заметки, советы, что изменить в следующий раз..." oninput="saveNote()"></textarea>
     </div>
   </div>
 </div>
@@ -716,6 +785,7 @@ html[data-theme="brutal"] .recipe-link{background:#fff;color:#111;border:2px sol
       <ul class="ingr-list" id="shopList"></ul>
       <div class="cart-actions">
         <button class="btn-secondary" onclick="copyCart()">📋 Копировать</button>
+        <button class="btn-secondary" onclick="downloadCart()">💾 Скачать .txt</button>
         <button class="btn-secondary" onclick="clearBought()">✔ Убрать купленное</button>
         <button class="btn-secondary" onclick="clearShoppingList()">🗑 Очистить всё</button>
       </div>
@@ -793,7 +863,22 @@ html[data-theme="brutal"] .recipe-link{background:#fff;color:#111;border:2px sol
     <h2 id="cookTitle">Название блюда</h2>
     <div class="cook-progress" id="cookProgress">Шаг 1 из 5</div>
     <div class="cook-step-text" id="cookText">Текст шага...</div>
-    <div id="cookTimerBox"></div>
+    <div id="cookTimerBox">
+  <div class="cook-timer">
+    <div class="timer-display" id="timerDisplay">00:00</div>
+    <div class="timer-presets">
+      <button onclick="startTimer(60)">1 мин</button>
+      <button onclick="startTimer(180)">3 мин</button>
+      <button onclick="startTimer(300)">5 мин</button>
+      <button onclick="startTimer(600)">10 мин</button>
+      <button onclick="startTimer(900)">15 мин</button>
+      <button onclick="startTimer(1800)">30 мин</button>
+    </div>
+    <div class="timer-controls">
+      <button class="btn-secondary" id="timerStopBtn" onclick="stopTimer()" style="display:none;">⏹ Остановить</button>
+    </div>
+  </div>
+</div>
     <div class="cook-nav">
       <button class="btn-secondary" onclick="prevStep()">← Назад</button>
       <button class="btn-primary" onclick="nextStep()">Далее →</button>
@@ -1085,9 +1170,20 @@ const categories = ["Все", ...new Set(recipes.map(r => r.category))];
 let activeCategory = "Все";
 
 function renderFilters() {
-  document.getElementById('filters').innerHTML = categories.map(c =>
-    `<button class="filter-btn ${c===activeCategory?'active':''}" onclick="setCategory('${esc(c)}')">${esc(c)}</button>`
-  ).join('') + `<button class="rand-btn" onclick="openRandom()">🎲 Случайный</button>`;
+  const favCount = favorites.length;
+  const cookedCount = Object.keys(cookedLog).length;
+  const special = [
+    { id:'Все',        label:'Все' },
+    { id:'__favs__',   label:'❤️ Избранное' + (favCount ? ' ('+favCount+')' : '') },
+    { id:'__recent__', label:'🕐 Недавние' },
+    { id:'__cooked__', label:'✅ Готовил' + (cookedCount ? ' ('+cookedCount+')' : '') },
+  ];
+  const cats = categories.filter(c => c !== 'Все');
+  const html = [
+    ...special.map(s => `<button class="filter-btn ${s.id===activeCategory?'active':''}" onclick="setCategory('${s.id}')">${s.label}</button>`),
+    ...cats.map(c => `<button class="filter-btn ${c===activeCategory?'active':''}" onclick="setCategory('${esc(c)}')">${esc(c)}</button>`)
+  ];
+  document.getElementById('filters').innerHTML = html.join('');
 }
 function setCategory(c){ activeCategory = c; renderFilters(); renderGrid(); }
 
@@ -1107,16 +1203,20 @@ function renderGrid() {
   const sort = document.getElementById('sortSelect').value;
 
   let list = recipes.filter(r => {
-    if (activeCategory !== 'Все' && r.category !== activeCategory) return false;
+    if (activeCategory === '__favs__') { if (!favorites.includes(r.id)) return false; }
+    else if (activeCategory === '__recent__') { if (!recentlyViewed.includes(r.id)) return false; }
+    else if (activeCategory === '__cooked__') { if (!cookedLog[r.id]?.length) return false; }
+    else if (activeCategory !== 'Все' && r.category !== activeCategory) return false;
     if (q && !r.title.toLowerCase().includes(q)) return false;
     if (ing) {
-      const ingLower = r.ingredients.join(' ').toLowerCase();
-      if (!ingLower.includes(ing)) return false;
+      if (!r.ingredients.join(' ').toLowerCase().includes(ing)) return false;
     }
     return true;
   });
 
-  if (sort === 'time') list.sort((a,b) => parseMinutes(a.time) - parseMinutes(b.time));
+  if (activeCategory === '__recent__') {
+    list.sort((a,b) => recentlyViewed.indexOf(a.id) - recentlyViewed.indexOf(b.id));
+  } else if (sort === 'time') list.sort((a,b) => parseMinutes(a.time) - parseMinutes(b.time));
   else if (sort === 'calories') list.sort((a,b) => a.calories - b.calories);
   else if (sort === 'rating') list.sort((a,b) => (ratings[b.id]||0) - (ratings[a.id]||0));
   else if (sort === 'title') list.sort((a,b) => a.title.localeCompare(b.title, 'ru'));
@@ -1130,10 +1230,14 @@ function renderGrid() {
   }
   grid.innerHTML = list.map(r => {
     const isFav = favorites.includes(r.id);
+    const hasNote = !!notes[r.id];
+    const cookCount = (cookedLog[r.id] || []).length;
     return `<div class="card" onclick="openModal(${r.id})">
       <div class="card-image">
         <img src="${getRecipeImage(r)}" alt="${esc(r.title)}" onerror="this.src='${FALLBACK_IMG}'">
         <button class="fav-btn ${isFav?'active':''}" onclick="event.stopPropagation();toggleFav(${r.id})">${isFav?'❤️':'🤍'}</button>
+        ${cookCount ? `<div class="cooked-badge">✅ ${cookCount}</div>` : ''}
+        ${hasNote ? `<div class="note-indicator" title="Есть заметка">📝</div>` : ''}
       </div>
       <div class="card-body">
         <div class="badge-row">
@@ -1159,6 +1263,7 @@ function toggleFav(id) {
   if (i >= 0) favorites.splice(i, 1); else favorites.push(id);
   localStorage.setItem('recipe_favorites', JSON.stringify(favorites));
   renderGrid();
+  renderFilters();
   updateModalFavBtn();
 }
 function updateModalFavBtn() {
@@ -1211,6 +1316,9 @@ function openModal(id) {
   renderIngredients();
   document.getElementById('mEquip').innerHTML = r.equipment.map(e => `<li class="equip-item">${esc(e)}</li>`).join('');
   document.getElementById('mSteps').innerHTML = r.steps.map(s => `<li class="step-item">${esc(s)}</li>`).join('');
+  renderNote();
+  renderCookedInfo();
+  addToRecent(id);
   document.getElementById('modal').classList.add('open');
   history.replaceState(null, '', '#recipe-' + id);
 }
@@ -1329,6 +1437,7 @@ function prevStep() {
 }
 function closeCooking() {
   document.getElementById('cooking-mode').style.display = 'none';
+  stopTimer();
 }
 
 /* =====================================================
@@ -1731,6 +1840,210 @@ function clearRecipeSelection() {
 /* =====================================================
    18. INIT
    ===================================================== */
+/* =====================================================
+   НОВЫЕ ФУНКЦИИ
+   ===================================================== */
+
+/* --- ХРАНИЛИЩА --- */
+let notes = JSON.parse(localStorage.getItem('recipe_notes') || '{}');
+let cookedLog = JSON.parse(localStorage.getItem('recipe_cooked') || '{}');
+let recentlyViewed = JSON.parse(localStorage.getItem('recipe_recent') || '[]');
+
+/* --- ТАЙМЕР --- */
+let timerInterval = null;
+let timerRemaining = 0;
+let timerTotal = 0;
+let audioCtx = null;
+
+function playBeep() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioCtx.currentTime;
+    [0, 0.35, 0.7].forEach((offset, i) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      o.frequency.value = i === 2 ? 1320 : 880;
+      o.type = 'sine';
+      g.gain.setValueAtTime(0.25, now + offset);
+      g.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.28);
+      o.start(now + offset);
+      o.stop(now + offset + 0.3);
+    });
+  } catch(e){}
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timerDisplay');
+  if (!el) return;
+  const m = Math.floor(timerRemaining / 60);
+  const s = timerRemaining % 60;
+  el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  if (timerRemaining <= 10 && timerRemaining > 0) el.style.color = '#ff4757';
+  else if (timerRemaining === 0 && timerTotal > 0) el.style.color = 'var(--secondary)';
+  else el.style.color = 'var(--primary)';
+}
+
+function startTimer(seconds) {
+  stopTimer();
+  timerTotal = seconds;
+  timerRemaining = seconds;
+  // звук нужно «разбудить» по клику, иначе браузер заблокирует его позже
+  try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch(e){}
+  updateTimerDisplay();
+  const stopBtn = document.getElementById('timerStopBtn');
+  if (stopBtn) stopBtn.style.display = 'inline-flex';
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    updateTimerDisplay();
+    if (timerRemaining <= 0) {
+      clearInterval(timerInterval); timerInterval = null;
+      playBeep();
+      setTimeout(playBeep, 1200);
+      toast('⏰ Время вышло!');
+      if (stopBtn) stopBtn.style.display = 'none';
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  timerRemaining = 0;
+  timerTotal = 0;
+  updateTimerDisplay();
+  const btn = document.getElementById('timerStopBtn');
+  if (btn) btn.style.display = 'none';
+}
+
+/* --- ЗАМЕТКИ --- */
+function saveNote() {
+  if (!currentModalId) return;
+  const val = document.getElementById('mNotes').value.trim();
+  if (val) notes[currentModalId] = val;
+  else delete notes[currentModalId];
+  localStorage.setItem('recipe_notes', JSON.stringify(notes));
+  renderGrid();
+}
+function renderNote() {
+  const el = document.getElementById('mNotes');
+  if (!el) return;
+  el.value = notes[currentModalId] || '';
+}
+
+/* --- COOKED --- */
+function markCooked() {
+  if (!currentModalId) return;
+  if (!cookedLog[currentModalId]) cookedLog[currentModalId] = [];
+  cookedLog[currentModalId].push(new Date().toISOString().slice(0,10));
+  localStorage.setItem('recipe_cooked', JSON.stringify(cookedLog));
+  renderCookedInfo();
+  renderGrid();
+  renderFilters();
+  toast('🎉 Отмечено как приготовленное!');
+}
+function renderCookedInfo() {
+  const el = document.getElementById('cookedInfo');
+  if (!el) return;
+  const dates = cookedLog[currentModalId] || [];
+  if (!dates.length) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  const last = dates[dates.length - 1];
+  el.innerHTML = `✅ Готовили <b>${dates.length}</b> раз${dates.length === 1 ? '' : 'а'} · Последний: <b>${last}</b>`;
+}
+
+/* --- НЕДАВНИЕ --- */
+function addToRecent(id) {
+  recentlyViewed = recentlyViewed.filter(x => x !== id);
+  recentlyViewed.unshift(id);
+  if (recentlyViewed.length > 20) recentlyViewed.pop();
+  localStorage.setItem('recipe_recent', JSON.stringify(recentlyViewed));
+}
+
+/* --- ПЕЧАТЬ / КОПИРОВАНИЕ --- */
+function printRecipe() {
+  const r = recipes.find(x => x.id === currentModalId);
+  if (!r) return;
+  const baseServ = parseInt(r.servings) || 2;
+  const factor = currentServings / baseServ;
+  const ingrHtml = r.ingredients.map(ing => {
+    const m = ing.match(/^(.*?)\s*—\s*(.+)$/);
+    const name = m ? m[1] : ing;
+    const amt = m ? scaleAmount(m[2], factor) : '';
+    return `<li>${esc(name)}${amt ? ' — ' + esc(amt) : ''}</li>`;
+  }).join('');
+  const stepsHtml = r.steps.map(s => `<li>${esc(s)}</li>`).join('');
+  const noteHtml = notes[r.id] ? `<div class="note"><b>📝 Мои заметки:</b><br>${esc(notes[r.id]).replace(/\n/g,'<br>')}</div>` : '';
+  const w = window.open('', '_blank');
+  if (!w) { toast('Разрешите всплывающие окна для печати', 'error'); return; }
+  w.document.write(`<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8">
+    <title>${esc(r.title)}</title>
+    <style>
+      body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:0 20px;color:#222;line-height:1.6;}
+      h1{font-size:32px;border-bottom:3px solid #ff6b6b;padding-bottom:10px;margin-bottom:20px;}
+      h2{font-size:20px;margin-top:30px;color:#ff6b6b;text-transform:uppercase;}
+      .meta{background:#f4f7f6;padding:15px;border-radius:8px;margin-bottom:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+      .meta div{text-align:center;font-size:14px;color:#666;}
+      .meta b{display:block;color:#ff6b6b;font-size:18px;}
+      ul,ol{padding-left:20px;}
+      li{margin-bottom:8px;}
+      .note{background:#fff3cd;padding:15px;border-left:4px solid #ffb703;margin-top:30px;border-radius:4px;}
+      .footer{margin-top:40px;font-size:12px;color:#999;text-align:center;border-top:1px solid #ddd;padding-top:10px;}
+      @media print{ body{margin:0;} }
+    </style></head><body>
+    <h1>${esc(r.title)}</h1>
+    <p style="color:#666;font-size:16px;">${esc(r.desc)}</p>
+    <div class="meta">
+      <div><b>${esc(r.time)}</b>Время</div>
+      <div><b>${esc(r.weight)}</b>Вес</div>
+      <div><b>${r.calories}</b>ккал/100г</div>
+      <div><b>${esc(r.difficulty)}</b>Сложность</div>
+    </div>
+    <h2>Ингредиенты (${currentServings} порц.)</h2>
+    <ul>${ingrHtml}</ul>
+    <h2>Инструменты</h2>
+    <ul>${r.equipment.map(e => '<li>' + esc(e) + '</li>').join('')}</ul>
+    <h2>Приготовление</h2>
+    <ol>${stepsHtml}</ol>
+    ${noteHtml}
+    <div class="footer">RecipeBook · ${new Date().toLocaleDateString('ru-RU')}</div>
+    <script>window.onload=()=>setTimeout(()=>window.print(),300);<\/script>
+    </body></html>`);
+  w.document.close();
+}
+
+function copyRecipeText() {
+  const r = recipes.find(x => x.id === currentModalId);
+  if (!r) return;
+  const baseServ = parseInt(r.servings) || 2;
+  const factor = currentServings / baseServ;
+  const ingr = r.ingredients.map(ing => {
+    const m = ing.match(/^(.*?)\s*—\s*(.+)$/);
+    if (!m) return '• ' + ing;
+    return '• ' + m[1] + ' — ' + scaleAmount(m[2], factor);
+  }).join('\n');
+  const steps = r.steps.map((s,i) => `${i+1}. ${s}`).join('\n');
+  const noteStr = notes[r.id] ? `\n\n📝 Заметки:\n${notes[r.id]}` : '';
+  const text = `🍳 ${r.title}\n\n${r.desc}\n\n⏱ ${r.time} · ⚖ ${r.weight} · 🔥 ${r.calories} ккал/100г · 🎯 ${r.difficulty}\n\n🧾 Ингредиенты (${currentServings} порц.):\n${ingr}\n\n📖 Приготовление:\n${steps}${noteStr}`;
+  navigator.clipboard.writeText(text).then(() => toast('📋 Рецепт скопирован'), () => toast('Не удалось скопировать', 'error'));
+}
+
+/* --- СКАЧИВАНИЕ КОРЗИНЫ --- */
+function downloadCart() {
+  if (!shoppingList.length) { toast('Корзина пуста', 'error'); return; }
+  const text = '🛒 Список покупок\n' + '='.repeat(30) + '\n\n' +
+    shoppingList.map(i => (i.bought ? '✓ ' : '☐ ') + i.name).join('\n');
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'shopping-list-' + new Date().toISOString().slice(0,10) + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('💾 Файл скачан');
+}
+
 document.getElementById('heroStats').textContent =
   `${recipes.length} рецептов · ${categories.length - 1} категорий · ${favorites.length} в избранном`;
 renderFilters();
