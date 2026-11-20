@@ -675,6 +675,10 @@ html[data-theme="brutal"] .recipe-link{background:#fff;color:#111;border:2px sol
 }
   .timer-display.ringing{animation:timerPulse 1s ease-in-out infinite}
 @keyframes timerPulse{50%{transform:scale(1.08)}}
+  /* список рецептов в чате: пункты не сжимаются, текст не обрезается */
+  .recipe-picker input{flex-shrink:0;}
+  .recipe-picker ul{min-height:0;}
+  .recipe-picker li{flex:0 0 auto;line-height:1.5;min-height:36px;display:flex;align-items:center;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
